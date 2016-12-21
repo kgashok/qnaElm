@@ -64,6 +64,7 @@ view model =
     , input [ type_ "password", placeholder "Password", onInput Password ] []
     , input [ type_ "password", placeholder "Re-enter Password", onInput PasswordAgain ] []
     , viewValidation model
+    , text "This is a simple addition of a text line"
     ]
 
 
