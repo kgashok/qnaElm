@@ -72,7 +72,7 @@ viewValidation model =
   let
     (color, message) =
       if model.password == model.passwordAgain then
-        ("green", "OK")
+        ("blue", "OK")
       else
         ("red", "Passwords do not match!")
   in
