@@ -9009,6 +9009,7 @@ var _user$project$Main$decodeGifUrl = A2(
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
+var _user$project$Main$kid = 'https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=';
 var _user$project$Main$Model = F2(
 	function (a, b) {
 		return {topic: a, gifUrl: b};
@@ -9020,7 +9021,7 @@ var _user$project$Main$NewGif = function (a) {
 	return {ctor: 'NewGif', _0: a};
 };
 var _user$project$Main$getRandomGif = function (topic) {
-	var url = A2(_elm_lang$core$Basics_ops['++'], 'https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=', topic);
+	var url = A2(_elm_lang$core$Basics_ops['++'], _user$project$Main$kid, topic);
 	var request = A2(_elm_lang$http$Http$get, url, _user$project$Main$decodeGifUrl);
 	return A2(_elm_lang$http$Http$send, _user$project$Main$NewGif, request);
 };

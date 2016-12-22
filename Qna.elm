@@ -4,7 +4,7 @@ import Html.Events exposing (..)
 import Http
 import Json.Decode as Decode
 
-
+main : Program Never Model Msg
 main =
   Html.program
     { init = init "cats"
@@ -15,14 +15,18 @@ main =
 
 -- MODEL
 
+kid : String
+kid = "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag="
+
 type alias Model =
   { topic : String
   , gifUrl : String
+  -- , knowledgeBase : String 
   }
 
 init : String -> (Model, Cmd Msg)
 init topic =
-  ( Model topic "waiting.gif"
+  ( Model topic "waiting.gif"  
   , getRandomGif topic
   )
 
@@ -72,8 +76,8 @@ subscriptions model =
 getRandomGif : String -> Cmd Msg
 getRandomGif topic =
   let
-    url =
-      "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=" ++ topic
+    url = 
+      kid ++ topic
 
     request =
       Http.get url decodeGifUrl
