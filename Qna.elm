@@ -18,6 +18,20 @@ main =
 kid : String
 kid = "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag="
 
+knowledgebaseId = "b693c8be-313c-434d-b3a7-dad2d4656039"
+qnamakerSubscriptionKey = "a6fbd18b9b2e45b59f2ce4f73a56e1e4"
+qnamakerUriBase = "https://westus.api.cognitive.microsoft.com/qnamaker/v1.0"
+
+builder = qnamakerUriBase ++ "/knowledgebases/" ++ knowledgebaseId ++ "/generateAnswer"
+
+payload = "{\"question\":\"Why bother with hashing?\"}"
+headers = {
+    "ocp-apim-subscription-key": "a6fbd18b9b2e45b59f2ce4f73a56e1e4",
+    "content-type": "application/json",
+    "cache-control": "no-cache",
+}
+
+
 type alias Model =
   { topic : String
   , gifUrl : String
