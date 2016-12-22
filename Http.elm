@@ -27,14 +27,22 @@ init =
 
 -- UPDATE
 
-type Msg = MorePlease
+type Msg
+  = MorePlease
+  | NewGif (Result Http.Error String)
+
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     MorePlease ->
-      (model, Cmd.none)
+      (model, getRandomGif model.topic)
 
+    NewGif (Ok newUrl) ->
+      ( { model | gifUrl = newUrl }, Cmd.none)
+
+    NewGif (Err _) ->
+      (model, Cmd.none)
 
 -- VIEW
 
@@ -50,3 +58,4 @@ view model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
+
