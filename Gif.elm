@@ -1,10 +1,12 @@
+module Gif exposing (..) 
+
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
 import Json.Decode as Decode
 
-
+main: Program Never Model Msg
 main =
   Html.program
     { init = init "cats"
@@ -15,19 +17,20 @@ main =
 
 -- MODEL
 
+kid: String
 kid = "http://qnaElm"
 
 type alias Model =
   { topic : String
   , gifUrl : String
-  , knowledgeBase : String 
+  --, knowledgeBase : String 
   }
 
 init : String -> (Model, Cmd Msg)
 init topic =
   ( Model topic "waiting.gif"
   , getRandomGif topic
-  , kid
+  -- , kid
   )
 
 
@@ -59,7 +62,8 @@ update msg model =
 view : Model -> Html Msg
 view model =
   div []
-    [ h2 [] [text model.topic]
+    [ h1 [] [text " Gif Generator"]
+    , h2 [] [text model.topic]
     , input [ type_ "text", placeholder "Topic", onInput Topic ] []
     , button [ onClick MorePlease ] [ text "More Please!" ]
     , br [] []
