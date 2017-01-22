@@ -62,7 +62,7 @@ update msg model =
 view : Model -> Html Msg
 view model =
   div []
-    [ h1 [] [text " Gif Generator"]
+    [ h3 [] [text " Gif Generator"]
     , h2 [] [text model.topic]
     , input [ type_ "text", placeholder "Topic", onInput Topic ] []
     , button [ onClick MorePlease ] [ text "More Please!" ]
