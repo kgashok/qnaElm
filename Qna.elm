@@ -1,3 +1,5 @@
+module Qna exposing (..) 
+
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -19,8 +21,13 @@ main =
 kid : String
 kid = "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag="
 
+knowledgebaseId : String 
 knowledgebaseId = "b693c8be-313c-434d-b3a7-dad2d4656039"
+
+qnamakerSubscriptionKey: String 
 qnamakerSubscriptionKey = "a6fbd18b9b2e45b59f2ce4f73a56e1e4"
+
+qnamakerUriBase: String 
 qnamakerUriBase = "https://westus.api.cognitive.microsoft.com/qnamaker/v1.0"
 
 builder : String 
@@ -40,12 +47,13 @@ type alias Header =
 type alias Model =
   { topic : String
   , gifUrl : String
-  -- , knowledgeBase : String 
+  , knowledgeBase : String 
+  , answer : String
   }
 
 init : String -> (Model, Cmd Msg)
 init topic =
-  ( Model topic "waiting.gif"  
+  ( Model topic "waiting.gif" builder "None"
   , getRandomGif topic
   )
 
@@ -56,18 +64,26 @@ type Msg
   = MorePlease
   | NewGif (Result Http.Error String)
   | Topic String
+  | NewAnswer (Result Http.Error String)
+
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     MorePlease ->
-      (model, getRandomGif model.topic)
+      -- (model, getRandomGif model.topic)
+      (model, getAnswer model.topic)
 
     NewGif (Ok newUrl) ->
       ( { model | gifUrl = newUrl }, Cmd.none)
 
     NewGif (Err _) ->
+      (model, Cmd.none)
+
+    NewAnswer (Ok answer) ->
+      ( { model | answer = answer }, Cmd.none) 
+    NewAnswer (Err _) -> 
       (model, Cmd.none)
 
     Topic s -> 
@@ -83,6 +99,7 @@ view model =
     , button [ onClick MorePlease ] [ text "More Please!" ]
     , br [] []
     , img [src model.gifUrl] []
+    , div [] [text (toString model.gifUrl) ]
     ]
 
 
@@ -123,16 +140,56 @@ getRandomGif topic =
       , body = toString <| Encode.encode 0 <| userEncoder topic
       -- , body = Http.string <| Encode.encode 0 <| userEncoder topic
       }
+    kid_ = kid ++ topic
+    request =
+      Http.get kid_ decodeGifUrl
   in
     -- Http.send settings Http.defaultSettings
     Http.send NewGif request
     -- |> Http.fromJson tokenDecoder 
 
-decodeQAUrl : Decode.Decoder String
-decodeQAUrl =
+
+getAnswer : String -> Cmd Msg
+getAnswer topic =
+  let
+    settings =
+      { method = "POST"
+      , headers = [ ("Content-Type", "application/json")
+                  , ("Ocp-Apim-Subscription-Key", "a6fbd18b9b2e45b59f2ce4f73a56e1e4")
+                  , ("Cache-Control", "no-cache") ]
+      , url  = builder
+      , body = encodeQuestion topic
+      --, body = toString <| Encode.encode 0 <| userEncoder topic
+      -- , body = Http.string <| Encode.encode 0 <| userEncoder topic
+      }
+    body =
+      encodeQuestion topic
+          |> Http.jsonBody
+            
+    request =
+      Http.post builder body decodeAnswer    
+
+  in
+    -- Http.send settings Http.defaultSettings
+    Http.send NewAnswer request
+    -- |> Http.fromJson tokenDecoder 
+
+encodeQuestion : String -> Encode.Value        
+encodeQuestion question =
+    Encode.object 
+        [ ("question", Encode.string question)
+        --, ("score", Encode.int (sumMarkedPoints model.entries))
+        ]
+
+
+decodeAnswer : Decode.Decoder String
+decodeAnswer =
   Decode.at ["data", "answer"] Decode.string
   -- Decode.at ["answer"] Decode.string
 
+decodeGifUrl : Decode.Decoder String
+decodeGifUrl =
+  Decode.at ["data", "image_url"] Decode.string
 
 {-- Decode POST response to get token
 tokenDecoder : Decoder String
