@@ -9207,7 +9207,7 @@ var _user$project$Qna$getRandomGif = function (topic) {
 var _user$project$Qna$init = function (topic) {
 	return {
 		ctor: '_Tuple2',
-		_0: A4(_user$project$Qna$Model, topic, 'barrelOfMonkeys.gif', _user$project$Qna$builder, 'None'),
+		_0: A4(_user$project$Qna$Model, topic, 'barrelOfMonkeys.gif', _user$project$Qna$builder, 'Barrel of Monkeys'),
 		_1: _user$project$Qna$getRandomGif(topic)
 	};
 };
@@ -9295,7 +9295,7 @@ var _user$project$Qna$view = function (model) {
 };
 var _user$project$Qna$main = _elm_lang$html$Html$program(
 	{
-		init: _user$project$Qna$init('hashing'),
+		init: _user$project$Qna$init('barrel of monkeys'),
 		view: _user$project$Qna$view,
 		update: _user$project$Qna$update,
 		subscriptions: _user$project$Qna$subscriptions

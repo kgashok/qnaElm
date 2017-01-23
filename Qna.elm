@@ -12,7 +12,7 @@ import Json.Encode as Encode
 main : Program Never Model Msg
 main =
   Html.program
-    { init = init "hashing"
+    { init = init "barrel of monkeys"
     , view = view
     , update = update
     , subscriptions = subscriptions
@@ -38,14 +38,6 @@ builder = qnamakerUriBase ++ "/knowledgebases/" ++ knowledgebaseId ++ "/generate
 payload : String 
 payload = "{\"question\":\"Why bother with hashing?\"}"
 
-{--
-type alias Header = 
-  { ocp-apim-subscription-key : "a6fbd18b9b2e45b59f2ce4f73a56e1e4",
-  , content-type : "application/json",
-  , cache-control : "no-cache"
-  }
---}
-
 type alias Model =
   { topic : String
   , gifUrl : String
@@ -55,7 +47,8 @@ type alias Model =
 
 init : String -> (Model, Cmd Msg)
 init topic =
-  ( Model topic "barrelOfMonkeys.gif" builder "None"
+  ( Model topic "barrelOfMonkeys.gif" builder "Barrel of Monkeys"
+  --, [getAnswer topic, getRandomGif topic]
   , getRandomGif topic
   )
 
@@ -67,7 +60,6 @@ type Msg
   | NewGif (Result Http.Error String)
   | Topic String
   | NewAnswer (Result Http.Error String)
-
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
