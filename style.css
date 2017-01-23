@@ -23,14 +23,14 @@ header {
   width: 500px;
 }
 
-footer {
+#footer {
   color: #a6a6a6;
-  margin: 50px auto 0;
+  margin: 10px auto 0;
   font-size: 14px;
   text-align: center;
 }
 
-footer a {
+#footer a {
   color: inherit;
 }
 
