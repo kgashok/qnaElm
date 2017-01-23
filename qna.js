@@ -9029,6 +9029,9 @@ var _elm_lang$http$Http$StringPart = F2(
 	});
 var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
 
+var _user$project$Version$gitRepo = 'https://github.com/kgashok/qnaElm';
+var _user$project$Version$version = 'v0.0-1-g4850d93';
+
 var _user$project$Qna$decodeGifUrl = A2(
 	_elm_lang$core$Json_Decode$at,
 	{
@@ -9076,6 +9079,38 @@ var _user$project$Qna$userEncoder = function (query) {
 var _user$project$Qna$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
+var _user$project$Qna$footer = A2(
+	_elm_lang$html$Html$div,
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html_Attributes$id('footer'),
+		_1: {ctor: '[]'}
+	},
+	{
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html$a,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$href(
+					A2(_elm_lang$core$Basics_ops['++'], _user$project$Version$gitRepo, '/issues/new')),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$target('_blank'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$rel('noopener noreferrer'),
+						_1: {ctor: '[]'}
+					}
+				}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(_user$project$Version$version),
+				_1: {ctor: '[]'}
+			}),
+		_1: {ctor: '[]'}
+	});
 var _user$project$Qna$payload = '{\"question\":\"Why bother with hashing?\"}';
 var _user$project$Qna$qnamakerUriBase = 'https://westus.api.cognitive.microsoft.com/qnamaker/v1.0';
 var _user$project$Qna$qnamakerSubscriptionKey = 'a6fbd18b9b2e45b59f2ce4f73a56e1e4';
@@ -9228,64 +9263,68 @@ var _user$project$Qna$view = function (model) {
 				}),
 			_1: {
 				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$input,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$type_('text'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$placeholder('Topic'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onInput(_user$project$Qna$Topic),
-								_1: {ctor: '[]'}
-							}
-						}
-					},
-					{ctor: '[]'}),
+				_0: _user$project$Qna$footer,
 				_1: {
 					ctor: '::',
 					_0: A2(
-						_elm_lang$html$Html$button,
+						_elm_lang$html$Html$input,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onClick(_user$project$Qna$MorePlease),
-							_1: {ctor: '[]'}
+							_0: _elm_lang$html$Html_Attributes$type_('text'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$placeholder('Topic'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onInput(_user$project$Qna$Topic),
+									_1: {ctor: '[]'}
+								}
+							}
 						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('More Please!'),
-							_1: {ctor: '[]'}
-						}),
+						{ctor: '[]'}),
 					_1: {
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$br,
-							{ctor: '[]'},
-							{ctor: '[]'}),
+							_elm_lang$html$Html$button,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(_user$project$Qna$MorePlease),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('More Please!'),
+								_1: {ctor: '[]'}
+							}),
 						_1: {
 							ctor: '::',
 							_0: A2(
-								_elm_lang$html$Html$img,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$src(model.gifUrl),
-									_1: {ctor: '[]'}
-								},
+								_elm_lang$html$Html$br,
+								{ctor: '[]'},
 								{ctor: '[]'}),
 							_1: {
 								ctor: '::',
 								_0: A2(
-									_elm_lang$html$Html$div,
-									{ctor: '[]'},
+									_elm_lang$html$Html$img,
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text(
-											_elm_lang$core$Basics$toString(model.answer)),
+										_0: _elm_lang$html$Html_Attributes$src(model.gifUrl),
 										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
+									},
+									{ctor: '[]'}),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$div,
+										{ctor: '[]'},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text(
+												_elm_lang$core$Basics$toString(model.answer)),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}
 							}
 						}
 					}

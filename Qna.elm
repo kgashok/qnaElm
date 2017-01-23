@@ -6,6 +6,7 @@ import Html.Events exposing (..)
 import Http exposing (..) 
 import Json.Decode as Decode
 import Json.Encode as Encode
+import Version exposing (version, gitRepo)
 
 --import Debug exposing (..) 
 
@@ -89,6 +90,7 @@ view : Model -> Html Msg
 view model =
   div []
     [ h2 [] [text model.topic]
+    , footer
     , input [ type_ "text", placeholder "Topic", onInput Topic ] []
     , button [ onClick MorePlease ] [ text "More Please!" ]
     , br [] []
@@ -96,6 +98,14 @@ view model =
     , div [] [text (toString model.answer) ]
     ]
 
+footer : Html Msg
+footer = 
+  div [id "footer"]
+  [ a [href (gitRepo ++ "/issues/new"), 
+    target "_blank", 
+    rel "noopener noreferrer"] 
+    [text version]
+  ]
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
