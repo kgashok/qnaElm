@@ -12,7 +12,7 @@ import Json.Encode as Encode
 main : Program Never Model Msg
 main =
   Html.program
-    { init = init "cats"
+    { init = init "hashing"
     , view = view
     , update = update
     , subscriptions = subscriptions
@@ -55,7 +55,7 @@ type alias Model =
 
 init : String -> (Model, Cmd Msg)
 init topic =
-  ( Model topic "waiting.gif" builder "None"
+  ( Model topic "barrelOfMonkeys.gif" builder "None"
   , getRandomGif topic
   )
 
@@ -165,25 +165,16 @@ getAnswer topic =
 encodeQuestion : String -> Encode.Value        
 encodeQuestion question =
     Encode.object 
-        [ ("question", Encode.string question)
-        --, ("score", Encode.int (sumMarkedPoints model.entries))
-        ]
-
+        [ ("question", Encode.string question)]
 
 decodeAnswer : Decode.Decoder String
 decodeAnswer =
   Decode.at ["answer"] Decode.string
-  -- Decode.at ["answer"] Decode.string
 
 decodeGifUrl : Decode.Decoder String
 decodeGifUrl =
   Decode.at ["data", "image_url"] Decode.string
 
-{-- Decode POST response to get token
-tokenDecoder : Decoder String
-tokenDecoder =
-    "answer" := Decode.string
---}
 
 getRandomGif : String -> Cmd Msg
 getRandomGif topic =
