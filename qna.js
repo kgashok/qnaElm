@@ -9190,7 +9190,7 @@ var _user$project$Qna$getRandomGif = function (topic) {
 var _user$project$Qna$init = function (topic) {
 	return {
 		ctor: '_Tuple2',
-		_0: A4(_user$project$Qna$Model, topic, 'barrelOfMonkeys.gif', _user$project$Qna$builder, 'Barrel of Monkeys'),
+		_0: A4(_user$project$Qna$Model, topic, 'img/barrelOfMonkeys.gif', _user$project$Qna$builder, 'Barrel of Monkeys'),
 		_1: _elm_lang$core$Platform_Cmd$batch(
 			{
 				ctor: '::',
