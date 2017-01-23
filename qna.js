@@ -9030,7 +9030,7 @@ var _elm_lang$http$Http$StringPart = F2(
 var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
 
 var _user$project$Version$gitRepo = 'https://github.com/kgashok/qnaElm';
-var _user$project$Version$version = 'v0.0-3-g79ccccb';
+var _user$project$Version$version = 'v0.0-4-gda943e7';
 
 var _user$project$Qna$decodeGifUrl = A2(
 	_elm_lang$core$Json_Decode$at,
@@ -9154,58 +9154,6 @@ var _user$project$Qna$getAnswer = function (topic) {
 	var request = _elm_lang$http$Http$request(settings);
 	return A2(_elm_lang$http$Http$send, _user$project$Qna$NewAnswer, request);
 };
-var _user$project$Qna$update = F2(
-	function (msg, model) {
-		var _p0 = msg;
-		switch (_p0.ctor) {
-			case 'MorePlease':
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: _user$project$Qna$getAnswer(model.topic)
-				};
-			case 'NewGif':
-				if (_p0._0.ctor === 'Ok') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{gifUrl: _p0._0._0}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			case 'NewAnswer':
-				if (_p0._0.ctor === 'Ok') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{answer: _p0._0._0}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				} else {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{
-								answer: _elm_lang$core$Basics$toString(_p0._0._0)
-							}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				}
-			default:
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{topic: _p0._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-		}
-	});
 var _user$project$Qna$Topic = function (a) {
 	return {ctor: 'Topic', _0: a};
 };
@@ -9243,9 +9191,70 @@ var _user$project$Qna$init = function (topic) {
 	return {
 		ctor: '_Tuple2',
 		_0: A4(_user$project$Qna$Model, topic, 'barrelOfMonkeys.gif', _user$project$Qna$builder, 'Barrel of Monkeys'),
-		_1: _user$project$Qna$getRandomGif(topic)
+		_1: _elm_lang$core$Platform_Cmd$batch(
+			{
+				ctor: '::',
+				_0: _user$project$Qna$getRandomGif(topic),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Qna$getAnswer(topic),
+					_1: {ctor: '[]'}
+				}
+			})
 	};
 };
+var _user$project$Qna$update = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		switch (_p0.ctor) {
+			case 'MorePlease':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _user$project$Qna$getAnswer(model.topic)
+				};
+			case 'NewGif':
+				if (_p0._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{gifUrl: _p0._0._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'NewAnswer':
+				if (_p0._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{answer: _p0._0._0}),
+						_1: _user$project$Qna$getRandomGif(model.topic)
+					};
+				} else {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								answer: _elm_lang$core$Basics$toString(_p0._0._0)
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				}
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{topic: _p0._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+		}
+	});
 var _user$project$Qna$MorePlease = {ctor: 'MorePlease'};
 var _user$project$Qna$view = function (model) {
 	return A2(

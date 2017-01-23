@@ -50,7 +50,7 @@ init : String -> (Model, Cmd Msg)
 init topic =
   ( Model topic "barrelOfMonkeys.gif" builder "Barrel of Monkeys"
   --, [getAnswer topic, getRandomGif topic]
-  , getRandomGif topic
+  , (Cmd.batch [getRandomGif topic, getAnswer topic])
   )
 
 
@@ -77,7 +77,7 @@ update msg model =
       (model, Cmd.none)
 
     NewAnswer (Ok answer) ->
-      ( { model | answer = answer }, Cmd.none) 
+      ( { model | answer = answer }, getRandomGif model.topic) 
     NewAnswer (Err err) -> 
       ( { model | answer = (toString err)}, Cmd.none)
 
