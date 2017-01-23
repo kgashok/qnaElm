@@ -66,6 +66,12 @@ button {
 
 button:hover {
   opacity: 0.75;
+  border: 2px solid #4CAF50; /* Green */
+}
+
+button:focus {
+  opacity: 0.75;
+  border: 2px solid #4CAF50; /* Green */
 }
 
 .button-group {

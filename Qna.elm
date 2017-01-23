@@ -49,8 +49,8 @@ type alias Model =
 init : String -> (Model, Cmd Msg)
 init topic =
   ( Model topic "img/barrelOfMonkeys.gif" builder "Barrel of Monkeys"
-  --, [getAnswer topic, getRandomGif topic]
-  , (Cmd.batch [getRandomGif topic, getAnswer topic])
+  , getAnswer topic
+  --, (Cmd.batch [getRandomGif topic, getAnswer topic])
   )
 
 
