@@ -143,10 +143,6 @@ getAnswer topic =
       , url  = builder
       -- , body = emptyBody
       , body = jsonBody (userEncoder topic) 
-      --, body = stringBody "{\"question\":\"algorithm\"}"
-      --, body = toString <| Encode.encode 0 <| userEncoder topic
-      --  body = stringBody ( Encode.encode 0 (userEncoder topic) 
-      -- , body = Http.string <| Encode.encode 0 <| userEncoder topic
       , expect = expectJson decodeAnswer
       , timeout = Nothing
       , withCredentials = False
@@ -156,13 +152,10 @@ getAnswer topic =
           |> Http.jsonBody
             
     request =
-      -- Http.post builder body decodeAnswer    
       Http.request settings 
     
   in
-    -- Http.send NewAnswer request
     Http.send NewAnswer request  
-      -- |> Http.expectJson decodeAnswer 
 
 encodeQuestion : String -> Encode.Value        
 encodeQuestion question =
@@ -188,13 +181,10 @@ getRandomGif topic =
                   , ("Cache-Control", "no-cache") ]
       , url  = kid
       , body = toString <| Encode.encode 0 <| userEncoder topic
-      -- , body = Http.string <| Encode.encode 0 <| userEncoder topic
       }
     kid_ = kid ++ topic
     request =
       Http.get kid_ decodeGifUrl
   in
-    -- Http.send settings Http.defaultSettings
     Http.send NewGif request
-    -- |> Http.fromJson tokenDecoder 
 
