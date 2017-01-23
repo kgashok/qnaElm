@@ -3,9 +3,11 @@ module Qna exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Http exposing (..)
+import Http exposing (..) 
 import Json.Decode as Decode
 import Json.Encode as Encode
+
+--import Debug exposing (..) 
 
 main : Program Never Model Msg
 main =
@@ -83,8 +85,8 @@ update msg model =
 
     NewAnswer (Ok answer) ->
       ( { model | answer = answer }, Cmd.none) 
-    NewAnswer (Err _) -> 
-      (model, Cmd.none)
+    NewAnswer (Err err) -> 
+      ( { model | answer = (toString err)}, Cmd.none)
 
     Topic s -> 
       ( {model |topic = s}, Cmd.none)
@@ -99,7 +101,7 @@ view model =
     , button [ onClick MorePlease ] [ text "More Please!" ]
     , br [] []
     , img [src model.gifUrl] []
-    , div [] [text (toString model.gifUrl) ]
+    , div [] [text (toString model.answer) ]
     ]
 
 
@@ -127,6 +129,61 @@ userEncoder query =
   Encode.object 
     [ ("question", Encode.string query)]
 
+getAnswer : String -> Cmd Msg
+getAnswer topic =
+  let
+    settings =
+      { method = "POST"
+      , headers = [ Http.header "Ocp-Apim-Subscription-Key" "a6fbd18b9b2e45b59f2ce4f73a56e1e4"
+                  , Http.header "Cache-Control" "no-cache"
+                  -- , Http.header "Content-Type" "application/json"
+                  ]
+      , url  = builder
+      -- , body = emptyBody
+      , body = jsonBody (userEncoder topic) 
+      --, body = stringBody "{\"question\":\"algorithm\"}"
+      --, body = toString <| Encode.encode 0 <| userEncoder topic
+      --  body = stringBody ( Encode.encode 0 (userEncoder topic) 
+      -- , body = Http.string <| Encode.encode 0 <| userEncoder topic
+      , expect = expectJson decodeAnswer
+      , timeout = Nothing
+      , withCredentials = False
+      }
+    body =
+      encodeQuestion topic
+          |> Http.jsonBody
+            
+    request =
+      -- Http.post builder body decodeAnswer    
+      Http.request settings 
+    
+  in
+    -- Http.send NewAnswer request
+    Http.send NewAnswer request  
+      -- |> Http.expectJson decodeAnswer 
+
+encodeQuestion : String -> Encode.Value        
+encodeQuestion question =
+    Encode.object 
+        [ ("question", Encode.string question)
+        --, ("score", Encode.int (sumMarkedPoints model.entries))
+        ]
+
+
+decodeAnswer : Decode.Decoder String
+decodeAnswer =
+  Decode.at ["answer"] Decode.string
+  -- Decode.at ["answer"] Decode.string
+
+decodeGifUrl : Decode.Decoder String
+decodeGifUrl =
+  Decode.at ["data", "image_url"] Decode.string
+
+{-- Decode POST response to get token
+tokenDecoder : Decoder String
+tokenDecoder =
+    "answer" := Decode.string
+--}
 
 getRandomGif : String -> Cmd Msg
 getRandomGif topic =
@@ -148,51 +205,3 @@ getRandomGif topic =
     Http.send NewGif request
     -- |> Http.fromJson tokenDecoder 
 
-
-getAnswer : String -> Cmd Msg
-getAnswer topic =
-  let
-    settings =
-      { method = "POST"
-      , headers = [ ("Content-Type", "application/json")
-                  , ("Ocp-Apim-Subscription-Key", "a6fbd18b9b2e45b59f2ce4f73a56e1e4")
-                  , ("Cache-Control", "no-cache") ]
-      , url  = builder
-      , body = encodeQuestion topic
-      --, body = toString <| Encode.encode 0 <| userEncoder topic
-      -- , body = Http.string <| Encode.encode 0 <| userEncoder topic
-      }
-    body =
-      encodeQuestion topic
-          |> Http.jsonBody
-            
-    request =
-      Http.post builder body decodeAnswer    
-
-  in
-    -- Http.send settings Http.defaultSettings
-    Http.send NewAnswer request
-    -- |> Http.fromJson tokenDecoder 
-
-encodeQuestion : String -> Encode.Value        
-encodeQuestion question =
-    Encode.object 
-        [ ("question", Encode.string question)
-        --, ("score", Encode.int (sumMarkedPoints model.entries))
-        ]
-
-
-decodeAnswer : Decode.Decoder String
-decodeAnswer =
-  Decode.at ["data", "answer"] Decode.string
-  -- Decode.at ["answer"] Decode.string
-
-decodeGifUrl : Decode.Decoder String
-decodeGifUrl =
-  Decode.at ["data", "image_url"] Decode.string
-
-{-- Decode POST response to get token
-tokenDecoder : Decoder String
-tokenDecoder =
-    "answer" := Decode.string
---}

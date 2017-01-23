@@ -9045,12 +9045,8 @@ var _user$project$Qna$decodeAnswer = A2(
 	_elm_lang$core$Json_Decode$at,
 	{
 		ctor: '::',
-		_0: 'data',
-		_1: {
-			ctor: '::',
-			_0: 'answer',
-			_1: {ctor: '[]'}
-		}
+		_0: 'answer',
+		_1: {ctor: '[]'}
 	},
 	_elm_lang$core$Json_Decode$string);
 var _user$project$Qna$encodeQuestion = function (question) {
@@ -9102,25 +9098,25 @@ var _user$project$Qna$NewAnswer = function (a) {
 var _user$project$Qna$getAnswer = function (topic) {
 	var body = _elm_lang$http$Http$jsonBody(
 		_user$project$Qna$encodeQuestion(topic));
-	var request = A3(_elm_lang$http$Http$post, _user$project$Qna$builder, body, _user$project$Qna$decodeAnswer);
 	var settings = {
 		method: 'POST',
 		headers: {
 			ctor: '::',
-			_0: {ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'},
+			_0: A2(_elm_lang$http$Http$header, 'Ocp-Apim-Subscription-Key', 'a6fbd18b9b2e45b59f2ce4f73a56e1e4'),
 			_1: {
 				ctor: '::',
-				_0: {ctor: '_Tuple2', _0: 'Ocp-Apim-Subscription-Key', _1: 'a6fbd18b9b2e45b59f2ce4f73a56e1e4'},
-				_1: {
-					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'Cache-Control', _1: 'no-cache'},
-					_1: {ctor: '[]'}
-				}
+				_0: A2(_elm_lang$http$Http$header, 'Cache-Control', 'no-cache'),
+				_1: {ctor: '[]'}
 			}
 		},
 		url: _user$project$Qna$builder,
-		body: _user$project$Qna$encodeQuestion(topic)
+		body: _elm_lang$http$Http$jsonBody(
+			_user$project$Qna$userEncoder(topic)),
+		expect: _elm_lang$http$Http$expectJson(_user$project$Qna$decodeAnswer),
+		timeout: _elm_lang$core$Maybe$Nothing,
+		withCredentials: false
 	};
+	var request = _elm_lang$http$Http$request(settings);
 	return A2(_elm_lang$http$Http$send, _user$project$Qna$NewAnswer, request);
 };
 var _user$project$Qna$update = F2(
@@ -9155,7 +9151,15 @@ var _user$project$Qna$update = F2(
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								answer: _elm_lang$core$Basics$toString(_p0._0._0)
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
 				}
 			default:
 				return {
@@ -9278,7 +9282,7 @@ var _user$project$Qna$view = function (model) {
 									{
 										ctor: '::',
 										_0: _elm_lang$html$Html$text(
-											_elm_lang$core$Basics$toString(model.gifUrl)),
+											_elm_lang$core$Basics$toString(model.answer)),
 										_1: {ctor: '[]'}
 									}),
 								_1: {ctor: '[]'}
