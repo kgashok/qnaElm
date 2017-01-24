@@ -50,7 +50,7 @@ type alias Model =
   { topic : String
   , gifUrl : String
   , knowledgeBase : List String 
-  , answer : String
+  , answer : List String
   }
 
 initialModel : Model 
@@ -61,7 +61,7 @@ initialModel =
     , builder knowledgebaseId
     , builder knowledgebaseId3
     ] 
-    "Barrel of Monkeys"
+    ["Barrel of Monkeys"]
 
 init : (Model, Cmd Msg)
 init  =
@@ -85,7 +85,16 @@ update msg model =
   case msg of
     MorePlease ->
       -- (model, getRandomGif model.topic)
-      (model, getAnswer model)
+      let 
+        model_ = { model | answer = [], 
+                      knowledgeBase = 
+                        [ builder knowledgebaseId2 
+                        , builder knowledgebaseId
+                        , builder knowledgebaseId3
+                        ] 
+        } 
+      in 
+        (model_, getAnswer model_)
 
     NewGif (Ok newUrl) ->
       ( { model | gifUrl = newUrl }, Cmd.none)
@@ -94,9 +103,14 @@ update msg model =
       (model, Cmd.none)
 
     NewAnswer (Ok answer) ->
-      ( { model | answer = answer }, getRandomGif model.topic) 
+      let 
+        model_ = { model | answer = answer :: model.answer,
+                    knowledgeBase = Maybe.withDefault ["QED"] (List.tail model.knowledgeBase)
+                 }
+      in 
+        ( model_, getAnswer model_) 
     NewAnswer (Err err) -> 
-      ( { model | answer = (toString err)}, Cmd.none)
+      ( { model | answer = [(toString err)]}, Cmd.none)
 
     Topic s -> 
       ( {model |topic = s}, Cmd.none)
@@ -152,7 +166,8 @@ getAnswer model =
   in
     case settings.url of 
       "QED" -> 
-        Cmd.none 
+        -- Cmd.none
+        getRandomGif model.topic
       _-> 
         Http.send NewAnswer request
 
