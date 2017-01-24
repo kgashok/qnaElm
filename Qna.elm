@@ -92,10 +92,10 @@ view model =
     [ h2 [] [text model.topic]
     , footer
     , input [ type_ "text", placeholder "Topic", onInput Topic ] []
-    , button [ onClick MorePlease ] [ text "More Please!" ]
+    , button [ onClick MorePlease ] [ text "Get answer!" ]
+    , div [] [text (toString model.answer) ]
     , br [] []
     , img [src model.gifUrl] []
-    , div [] [text (toString model.answer) ]
     ]
 
 footer : Html Msg
