@@ -32,7 +32,7 @@ knowledgebaseId3 = "ed3f0ded-b71e-43ff-93c6-a34454702b64"
 
 qnamakerSubscriptionKey: String 
 qnamakerSubscriptionKey = "a6fbd18b9b2e45b59f2ce4f73a56e1e4"
-
+ 
 qnamakerUriBase: String 
 qnamakerUriBase = "https://westus.api.cognitive.microsoft.com/qnamaker/v1.0"
 
@@ -137,7 +137,7 @@ view model =
     [ h2 [] [text model.topic]
     , footer
     , input [ type_ "text", placeholder "Topic", onInput Topic ] []
-    , button [ onClick MorePlease ] [ text "Get answer!" ]
+    , button [ onClick MorePlease ] [ text "Get Answers!" ]
     , div [] [text (toString model.answer) ]
     , br [] []
     , img [src model.gifUrl] []
