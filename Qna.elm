@@ -24,6 +24,12 @@ main =
 knowledgebaseId : String 
 knowledgebaseId = "b693c8be-313c-434d-b3a7-dad2d4656039"
 
+knowledgebaseId2 : String 
+knowledgebaseId2 = "8c59a93f-1622-4ce3-b848-dcc56f10f2b0"
+
+knowledgebaseId3 : String 
+knowledgebaseId3 = "ed3f0ded-b71e-43ff-93c6-a34454702b64"
+
 qnamakerSubscriptionKey: String 
 qnamakerSubscriptionKey = "a6fbd18b9b2e45b59f2ce4f73a56e1e4"
 
@@ -31,7 +37,7 @@ qnamakerUriBase: String
 qnamakerUriBase = "https://westus.api.cognitive.microsoft.com/qnamaker/v1.0"
 
 builder : String 
-builder = qnamakerUriBase ++ "/knowledgebases/" ++ knowledgebaseId ++ "/generateAnswer"
+builder = qnamakerUriBase ++ "/knowledgebases/" ++ knowledgebaseId2 ++ "/generateAnswer"
 
 randomGifUrl : String
 randomGifUrl = "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag="
