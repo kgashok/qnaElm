@@ -8,6 +8,8 @@ import Json.Decode as Decode
 import Json.Encode as Encode
 import Version exposing (version, gitRepo)
 
+import ElmEscapeHtml exposing (..) 
+
 --import Debug exposing (..) 
 
 main : Program Never Model Msg
@@ -116,7 +118,7 @@ update msg model =
         kBase = Maybe.withDefault "NA" 
           (List.head (List.map .name model.knowledgeBase)) 
         model_ = { model | answer = 
-                      (Answer kBase answer) :: model.answer,
+                      (Answer kBase (unescape answer)) :: model.answer,
                     knowledgeBase = 
                       Maybe.withDefault [QnAService "QED" ""] 
                         (List.tail model.knowledgeBase)
