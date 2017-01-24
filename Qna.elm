@@ -13,7 +13,7 @@ import Version exposing (version, gitRepo)
 main : Program Never Model Msg
 main =
   Html.program
-    { init = init "barrel of monkeys"
+    { init = init
     , view = view
     , update = update
     , subscriptions = subscriptions
@@ -46,10 +46,14 @@ type alias Model =
   , answer : String
   }
 
-init : String -> (Model, Cmd Msg)
-init topic =
-  ( Model topic "img/barrelOfMonkeys.gif" builder "Barrel of Monkeys"
-  , getAnswer topic
+initialModel : Model 
+initialModel = 
+  Model "barrel of monkeys" "img/barrelOfMonkeys.gif" builder "Barrel of Monkeys"
+
+init : (Model, Cmd Msg)
+init  =
+  ( initialModel 
+  , getAnswer initialModel 
   --, (Cmd.batch [getRandomGif topic, getAnswer topic])
   )
 
@@ -68,7 +72,7 @@ update msg model =
   case msg of
     MorePlease ->
       -- (model, getRandomGif model.topic)
-      (model, getAnswer model.topic)
+      (model, getAnswer model)
 
     NewGif (Ok newUrl) ->
       ( { model | gifUrl = newUrl }, Cmd.none)
@@ -114,8 +118,8 @@ subscriptions model =
 
 -- HTTP -- 
 
-getAnswer : String -> Cmd Msg
-getAnswer topic =
+getAnswer : Model -> Cmd Msg
+getAnswer model =
   let
     settings =
       { method  = "POST"
@@ -125,7 +129,7 @@ getAnswer topic =
                   ]
       , url     = builder
       -- , body = emptyBody
-      , body    = jsonBody (encodeQuestion topic) 
+      , body    = jsonBody (encodeQuestion model.topic) 
       , expect  = expectJson decodeAnswer
       , timeout = Nothing
       , withCredentials = False
@@ -133,7 +137,7 @@ getAnswer topic =
     request =
       Http.request settings 
   in
-    Http.send NewAnswer request  
+    Http.send NewAnswer request
 
 encodeQuestion : String -> Encode.Value        
 encodeQuestion question =
