@@ -18,6 +18,110 @@ a {
 header {
 }
 
+.example {
+  -webkit-columns: 3 150px;
+  -moz-columns: 3 150px;
+  columns: 3 150px;
+  -webkit-column-gap: 5em;
+  -moz-column-gap: 5em;
+  column-gap: 5em;
+  -webkit-column-rule-width: 4px;
+  -moz-column-rule-width: 4px;
+  column-rule-width: 4px;
+  -webkit-column-rule-color: #e74c3c;
+  -moz-column-rule-color: #e74c3c;
+  column-rule-color: #e74c3c;
+  margin: 2em auto 7em;
+}
+
+.example-dotted {
+  -webkit-column-rule-style: dotted;
+  -moz-column-rule-style: dotted;
+  column-rule-style: dotted;
+}
+
+.example-dashed {
+  -webkit-column-rule-style: dashed;
+  -moz-column-rule-style: dashed;
+  column-rule-style: dashed;
+}
+
+.example-solid {
+  -webkit-column-rule-style: solid;
+  -moz-column-rule-style: solid;
+  column-rule-style: solid;
+}
+
+.example-double {
+  -webkit-column-rule-style: double;
+  -moz-column-rule-style: double;
+  column-rule-style: double;
+}
+
+.example-groove {
+  -webkit-column-rule-style: groove;
+  -moz-column-rule-style: groove;
+  column-rule-style: groove;
+}
+
+.example-ridge {
+  -webkit-column-rule-style: ridge;
+  -moz-column-rule-style: ridge;
+  column-rule-style: ridge;
+}
+
+.example-inset {
+  -webkit-column-rule-style: inset;
+  -moz-column-rule-style: inset;
+  column-rule-style: inset;
+}
+
+.example-outset {
+  -webkit-column-rule-style: outset;
+  -moz-column-rule-style: outset;
+  column-rule-style: outset;
+}
+
+.example-none {
+  -webkit-column-rule-style: none;
+  -moz-column-rule-style: none;
+  column-rule-style: none;
+}
+
+.example-hidden {
+  -webkit-column-rule-style: hidden;
+  -moz-column-rule-style: hidden;
+  column-rule-style: hidden;
+}
+
+li .wrapper {
+     /*width: 1005px;*/
+     margin: 0 auto;
+     height: auto;
+}
+
+.leftcolumn, .rightcolumn {
+    border: 1px solid white;
+    float: left;
+    min-height: 450px;
+    color: white;
+}
+
+li .kBase {
+  width: 250px;
+  /*background-color: #111; */
+  color: gray; 
+  height: auto;
+}
+
+li .answer {
+  width: 750px;
+  /*background-color: #777; */
+  font-weight: normal;
+  color: blue; 
+  height: 100%;
+}
+
 .content {
   margin: 40px auto; 
   width: 500px;
@@ -98,8 +202,9 @@ ul {
 }
 
 li {
-  background: #fff;
-  height: 25px;
+  /*background: #fa0;*/
+  /*height: 25px;*/
+  height: auto;
   position: relative;
   padding: 15px 30px;
   margin-bottom: 8px;

@@ -68,8 +68,8 @@ type alias Answer =
 kBase : List QnAService
 kBase = 
   [ QnAService "cse" (builder knowledgebaseId2)
-  , QnAService "ds"  (builder knowledgebaseId) 
   , QnAService "cpp" (builder knowledgebaseId3)
+  , QnAService "ds"  (builder knowledgebaseId) 
   ]
 
 initialModel : Model 
@@ -135,14 +135,31 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-  div []
+  div [ class "example example-dotted"]
     [ h2 [] [text model.topic]
     , footer
     , input [ type_ "text", placeholder "Topic", onInput Topic ] []
     , button [ onClick MorePlease ] [ text "Get Answers!" ]
-    , div [] [text (toString model.answer) ]
-    , br [] []
+    --, div [] [text (toString model.answer) ]
+    --, br [] []
+    , viewAllAnswers model 
+    --, br [] []
     , img [src model.gifUrl] []
+    ]
+
+viewAllAnswers: Model -> Html Msg 
+viewAllAnswers model =
+  let 
+    listOfAnswers = 
+      List.map viewAnswer model.answer
+  in 
+    ul [] listOfAnswers  
+
+viewAnswer: Answer -> Html Msg 
+viewAnswer answer = 
+  li []
+    [ span [class "kBase" ] [text (answer.kBase ++ "  ")]
+    , span [class "answer"] [text answer.text]
     ]
  
 footer : Html Msg
