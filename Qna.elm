@@ -36,8 +36,9 @@ qnamakerSubscriptionKey = "a6fbd18b9b2e45b59f2ce4f73a56e1e4"
 qnamakerUriBase: String 
 qnamakerUriBase = "https://westus.api.cognitive.microsoft.com/qnamaker/v1.0"
 
-builder : String 
-builder = qnamakerUriBase ++ "/knowledgebases/" ++ knowledgebaseId2 ++ "/generateAnswer"
+builder : String -> String 
+builder kid = 
+  qnamakerUriBase ++ "/knowledgebases/" ++ kid ++ "/generateAnswer"
 
 randomGifUrl : String
 randomGifUrl = "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag="
@@ -48,13 +49,16 @@ payload = "{\"question\":\"Why bother with hashing?\"}"
 type alias Model =
   { topic : String
   , gifUrl : String
-  , knowledgeBase : String 
+  , knowledgeBase : List String 
   , answer : String
   }
 
 initialModel : Model 
 initialModel = 
-  Model "barrel of monkeys" "img/barrelOfMonkeys.gif" builder "Barrel of Monkeys"
+  Model "barrel of monkeys" 
+    "img/barrelOfMonkeys.gif" 
+    [builder knowledgebaseId2]
+    "Barrel of Monkeys"
 
 init : (Model, Cmd Msg)
 init  =
@@ -133,7 +137,7 @@ getAnswer model =
                   , Http.header "Cache-Control" "no-cache"
                   -- , Http.header "Content-Type" "application/json"
                   ]
-      , url     = builder
+      , url     = Maybe.withDefault knowledgebaseId2 (List.head model.knowledgeBase)
       -- , body = emptyBody
       , body    = jsonBody (encodeQuestion model.topic) 
       , expect  = expectJson decodeAnswer
