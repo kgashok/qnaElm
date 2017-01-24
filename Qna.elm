@@ -125,8 +125,18 @@ update msg model =
                  }
       in 
         ( model_, getAnswer model_) 
-    NewAnswer (Err err) -> 
-      ( { model | answer = [Answer "Err" (toString err)]}, Cmd.none)
+    NewAnswer (Err err) ->
+      let 
+        kBase = Maybe.withDefault "NA" 
+          (List.head (List.map .name model.knowledgeBase)) 
+        model_ = { model | answer = 
+                    (Answer kBase (toString err)) :: model.answer,
+                        knowledgeBase = 
+                          Maybe.withDefault [QnAService "QED" ""] 
+                            (List.tail model.knowledgeBase)
+                 }
+      in
+        ( model_, getAnswer model_ )
 
     Topic s -> 
       ( {model |topic = s}, Cmd.none)

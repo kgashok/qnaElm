@@ -11090,7 +11090,7 @@ var _marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape = _marcosh$elm_html_to_u
 var _marcosh$elm_html_to_unicode$ElmEscapeHtml$escape = _marcosh$elm_html_to_unicode$ElmEscapeHtml$convert(_marcosh$elm_html_to_unicode$ElmEscapeHtml$escapeChars);
 
 var _user$project$Version$gitRepo = 'https://github.com/kgashok/qnaElm';
-var _user$project$Version$version = 'v1.0-1-ga92dde5';
+var _user$project$Version$version = 'v1.0-2-ga6a9b5f';
 
 var _user$project$Qna$decodeGifUrl = A2(
 	_elm_lang$core$Json_Decode$at,
@@ -11384,21 +11384,40 @@ var _user$project$Qna$update = F2(
 						_1: _user$project$Qna$getAnswer(model_)
 					};
 				} else {
+					var kBase = A2(
+						_elm_lang$core$Maybe$withDefault,
+						'NA',
+						_elm_lang$core$List$head(
+							A2(
+								_elm_lang$core$List$map,
+								function (_) {
+									return _.name;
+								},
+								model.knowledgeBase)));
+					var model_ = _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							answer: {
+								ctor: '::',
+								_0: A2(
+									_user$project$Qna$Answer,
+									kBase,
+									_elm_lang$core$Basics$toString(_p1._0._0)),
+								_1: model.answer
+							},
+							knowledgeBase: A2(
+								_elm_lang$core$Maybe$withDefault,
+								{
+									ctor: '::',
+									_0: A2(_user$project$Qna$QnAService, 'QED', ''),
+									_1: {ctor: '[]'}
+								},
+								_elm_lang$core$List$tail(model.knowledgeBase))
+						});
 					return {
 						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{
-								answer: {
-									ctor: '::',
-									_0: A2(
-										_user$project$Qna$Answer,
-										'Err',
-										_elm_lang$core$Basics$toString(_p1._0._0)),
-									_1: {ctor: '[]'}
-								}
-							}),
-						_1: _elm_lang$core$Platform_Cmd$none
+						_0: model_,
+						_1: _user$project$Qna$getAnswer(model_)
 					};
 				}
 			default:
