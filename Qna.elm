@@ -113,19 +113,6 @@ subscriptions model =
 
 -- HTTP -- 
 
-{-- POST register / login request
-authUser : Model -> String -> Task Http.Error String
-authUser model apiUrl =
-    { verb = "POST"
-    , headers = [ ("Content-Type", "application/json") ]
-    , url = apiUrl
-    , body = Http.string <| Encode.encode 0 <| userEncoder model
-    }
-    |> Http.send Http.defaultSettings
-    |> Http.fromJson tokenDecoder
---}
-
-
 getAnswer : String -> Cmd Msg
 getAnswer topic =
   let
@@ -156,24 +143,14 @@ decodeAnswer : Decode.Decoder String
 decodeAnswer =
   Decode.at ["answer"] Decode.string
 
-decodeGifUrl : Decode.Decoder String
-decodeGifUrl =
-  Decode.at ["data", "image_url"] Decode.string
-
-
 getRandomGif : String -> Cmd Msg
 getRandomGif topic =
   let
-    settings =
-      { verb = "POST"
-      , headers = [ ("Content-Type", "application/json")
-                  , ("Ocp-Apim-Subscription-Key", "a6fbd18b9b2e45b59f2ce4f73a56e1e4")
-                  , ("Cache-Control", "no-cache") ]
-      , url  = randomGifUrl
-      }
-    randomGifUrl_ = randomGifUrl ++ topic
-    request =
-      Http.get randomGifUrl_ decodeGifUrl
+    url     = randomGifUrl ++ topic
+    request = Http.get url decodeGifUrl
   in
     Http.send NewGif request
 
+decodeGifUrl : Decode.Decoder String
+decodeGifUrl =
+  Decode.at ["data", "image_url"] Decode.string

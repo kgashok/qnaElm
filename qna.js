@@ -9154,25 +9154,8 @@ var _user$project$Qna$NewGif = function (a) {
 	return {ctor: 'NewGif', _0: a};
 };
 var _user$project$Qna$getRandomGif = function (topic) {
-	var randomGifUrl_ = A2(_elm_lang$core$Basics_ops['++'], _user$project$Qna$randomGifUrl, topic);
-	var request = A2(_elm_lang$http$Http$get, randomGifUrl_, _user$project$Qna$decodeGifUrl);
-	var settings = {
-		verb: 'POST',
-		headers: {
-			ctor: '::',
-			_0: {ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'},
-			_1: {
-				ctor: '::',
-				_0: {ctor: '_Tuple2', _0: 'Ocp-Apim-Subscription-Key', _1: 'a6fbd18b9b2e45b59f2ce4f73a56e1e4'},
-				_1: {
-					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'Cache-Control', _1: 'no-cache'},
-					_1: {ctor: '[]'}
-				}
-			}
-		},
-		url: _user$project$Qna$randomGifUrl
-	};
+	var url = A2(_elm_lang$core$Basics_ops['++'], _user$project$Qna$randomGifUrl, topic);
+	var request = A2(_elm_lang$http$Http$get, url, _user$project$Qna$decodeGifUrl);
 	return A2(_elm_lang$http$Http$send, _user$project$Qna$NewGif, request);
 };
 var _user$project$Qna$update = F2(
