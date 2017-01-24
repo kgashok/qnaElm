@@ -57,7 +57,10 @@ initialModel : Model
 initialModel = 
   Model "barrel of monkeys" 
     "img/barrelOfMonkeys.gif" 
-    [builder knowledgebaseId2]
+    [ builder knowledgebaseId2 
+    , builder knowledgebaseId
+    , builder knowledgebaseId3
+    ] 
     "Barrel of Monkeys"
 
 init : (Model, Cmd Msg)
