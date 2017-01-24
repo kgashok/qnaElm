@@ -21,8 +21,8 @@ main =
 
 -- MODEL
 
-kid : String
-kid = "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag="
+randomGifUrl : String
+randomGifUrl = "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag="
 
 knowledgebaseId : String 
 knowledgebaseId = "b693c8be-313c-434d-b3a7-dad2d4656039"
@@ -125,42 +125,32 @@ authUser model apiUrl =
     |> Http.fromJson tokenDecoder
 --}
 
--- Encode user to construct POST request body (for Register and Log In)
-userEncoder : String -> Encode.Value
-userEncoder query = 
-  Encode.object 
-    [ ("question", Encode.string query)]
 
 getAnswer : String -> Cmd Msg
 getAnswer topic =
   let
     settings =
-      { method = "POST"
+      { method  = "POST"
       , headers = [ Http.header "Ocp-Apim-Subscription-Key" "a6fbd18b9b2e45b59f2ce4f73a56e1e4"
                   , Http.header "Cache-Control" "no-cache"
                   -- , Http.header "Content-Type" "application/json"
                   ]
-      , url  = builder
+      , url     = builder
       -- , body = emptyBody
-      , body = jsonBody (userEncoder topic) 
-      , expect = expectJson decodeAnswer
+      , body    = jsonBody (encodeQuestion topic) 
+      , expect  = expectJson decodeAnswer
       , timeout = Nothing
       , withCredentials = False
       }
-    body =
-      encodeQuestion topic
-          |> Http.jsonBody
-            
     request =
       Http.request settings 
-    
   in
     Http.send NewAnswer request  
 
 encodeQuestion : String -> Encode.Value        
 encodeQuestion question =
-    Encode.object 
-        [ ("question", Encode.string question)]
+  Encode.object 
+    [ ("question", Encode.string question)]
 
 decodeAnswer : Decode.Decoder String
 decodeAnswer =
@@ -179,12 +169,11 @@ getRandomGif topic =
       , headers = [ ("Content-Type", "application/json")
                   , ("Ocp-Apim-Subscription-Key", "a6fbd18b9b2e45b59f2ce4f73a56e1e4")
                   , ("Cache-Control", "no-cache") ]
-      , url  = kid
-      , body = toString <| Encode.encode 0 <| userEncoder topic
+      , url  = randomGifUrl
       }
-    kid_ = kid ++ topic
+    randomGifUrl_ = randomGifUrl ++ topic
     request =
-      Http.get kid_ decodeGifUrl
+      Http.get randomGifUrl_ decodeGifUrl
   in
     Http.send NewGif request
 

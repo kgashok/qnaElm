@@ -9030,7 +9030,7 @@ var _elm_lang$http$Http$StringPart = F2(
 var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
 
 var _user$project$Version$gitRepo = 'https://github.com/kgashok/qnaElm';
-var _user$project$Version$version = 'v0.0-9-g85e8f63';
+var _user$project$Version$version = 'v0.0-11-g3fdc0ac';
 
 var _user$project$Qna$decodeGifUrl = A2(
 	_elm_lang$core$Json_Decode$at,
@@ -9060,18 +9060,6 @@ var _user$project$Qna$encodeQuestion = function (question) {
 				ctor: '_Tuple2',
 				_0: 'question',
 				_1: _elm_lang$core$Json_Encode$string(question)
-			},
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Qna$userEncoder = function (query) {
-	return _elm_lang$core$Json_Encode$object(
-		{
-			ctor: '::',
-			_0: {
-				ctor: '_Tuple2',
-				_0: 'question',
-				_1: _elm_lang$core$Json_Encode$string(query)
 			},
 			_1: {ctor: '[]'}
 		});
@@ -9122,7 +9110,7 @@ var _user$project$Qna$builder = A2(
 		_elm_lang$core$Basics_ops['++'],
 		'/knowledgebases/',
 		A2(_elm_lang$core$Basics_ops['++'], _user$project$Qna$knowledgebaseId, '/generateAnswer')));
-var _user$project$Qna$kid = 'https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=';
+var _user$project$Qna$randomGifUrl = 'https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=';
 var _user$project$Qna$Model = F4(
 	function (a, b, c, d) {
 		return {topic: a, gifUrl: b, knowledgeBase: c, answer: d};
@@ -9131,8 +9119,6 @@ var _user$project$Qna$NewAnswer = function (a) {
 	return {ctor: 'NewAnswer', _0: a};
 };
 var _user$project$Qna$getAnswer = function (topic) {
-	var body = _elm_lang$http$Http$jsonBody(
-		_user$project$Qna$encodeQuestion(topic));
 	var settings = {
 		method: 'POST',
 		headers: {
@@ -9146,13 +9132,20 @@ var _user$project$Qna$getAnswer = function (topic) {
 		},
 		url: _user$project$Qna$builder,
 		body: _elm_lang$http$Http$jsonBody(
-			_user$project$Qna$userEncoder(topic)),
+			_user$project$Qna$encodeQuestion(topic)),
 		expect: _elm_lang$http$Http$expectJson(_user$project$Qna$decodeAnswer),
 		timeout: _elm_lang$core$Maybe$Nothing,
 		withCredentials: false
 	};
 	var request = _elm_lang$http$Http$request(settings);
 	return A2(_elm_lang$http$Http$send, _user$project$Qna$NewAnswer, request);
+};
+var _user$project$Qna$init = function (topic) {
+	return {
+		ctor: '_Tuple2',
+		_0: A4(_user$project$Qna$Model, topic, 'img/barrelOfMonkeys.gif', _user$project$Qna$builder, 'Barrel of Monkeys'),
+		_1: _user$project$Qna$getAnswer(topic)
+	};
 };
 var _user$project$Qna$Topic = function (a) {
 	return {ctor: 'Topic', _0: a};
@@ -9161,8 +9154,8 @@ var _user$project$Qna$NewGif = function (a) {
 	return {ctor: 'NewGif', _0: a};
 };
 var _user$project$Qna$getRandomGif = function (topic) {
-	var kid_ = A2(_elm_lang$core$Basics_ops['++'], _user$project$Qna$kid, topic);
-	var request = A2(_elm_lang$http$Http$get, kid_, _user$project$Qna$decodeGifUrl);
+	var randomGifUrl_ = A2(_elm_lang$core$Basics_ops['++'], _user$project$Qna$randomGifUrl, topic);
+	var request = A2(_elm_lang$http$Http$get, randomGifUrl_, _user$project$Qna$decodeGifUrl);
 	var settings = {
 		verb: 'POST',
 		headers: {
@@ -9178,30 +9171,9 @@ var _user$project$Qna$getRandomGif = function (topic) {
 				}
 			}
 		},
-		url: _user$project$Qna$kid,
-		body: _elm_lang$core$Basics$toString(
-			A2(
-				_elm_lang$core$Json_Encode$encode,
-				0,
-				_user$project$Qna$userEncoder(topic)))
+		url: _user$project$Qna$randomGifUrl
 	};
 	return A2(_elm_lang$http$Http$send, _user$project$Qna$NewGif, request);
-};
-var _user$project$Qna$init = function (topic) {
-	return {
-		ctor: '_Tuple2',
-		_0: A4(_user$project$Qna$Model, topic, 'img/barrelOfMonkeys.gif', _user$project$Qna$builder, 'Barrel of Monkeys'),
-		_1: _elm_lang$core$Platform_Cmd$batch(
-			{
-				ctor: '::',
-				_0: _user$project$Qna$getRandomGif(topic),
-				_1: {
-					ctor: '::',
-					_0: _user$project$Qna$getAnswer(topic),
-					_1: {ctor: '[]'}
-				}
-			})
-	};
 };
 var _user$project$Qna$update = F2(
 	function (msg, model) {
