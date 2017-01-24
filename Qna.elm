@@ -50,12 +50,17 @@ type alias Model =
   { topic : String
   , gifUrl : String
   , knowledgeBase : List QnAService
-  , answer : List String
+  , answer : List Answer
   }
   
 type alias QnAService = 
   { name : String 
   , url  : String 
+  }
+
+type alias Answer = 
+  { kBase : String 
+  , text  : String
   }
 
 kBase : List QnAService
@@ -70,7 +75,7 @@ initialModel =
   Model "barrel of monkeys" 
     "img/barrelOfMonkeys.gif" 
     kBase 
-    ["Barrel of Monkeys"]
+    [Answer "Unknown" "Barrel of Monkeys"]
 
 init : (Model, Cmd Msg)
 init  =
@@ -108,10 +113,10 @@ update msg model =
 
     NewAnswer (Ok answer) ->
       let 
-        kBaseTag = Maybe.withDefault "NA" 
+        kBase = Maybe.withDefault "NA" 
           (List.head (List.map .name model.knowledgeBase)) 
         model_ = { model | answer = 
-                      (kBaseTag ++ ":" ++ answer) :: model.answer,
+                      (Answer kBase answer) :: model.answer,
                     knowledgeBase = 
                       Maybe.withDefault [QnAService "QED" ""] 
                         (List.tail model.knowledgeBase)
@@ -119,7 +124,7 @@ update msg model =
       in 
         ( model_, getAnswer model_) 
     NewAnswer (Err err) -> 
-      ( { model | answer = [(toString err)]}, Cmd.none)
+      ( { model | answer = [Answer "Err" (toString err)]}, Cmd.none)
 
     Topic s -> 
       ( {model |topic = s}, Cmd.none)
