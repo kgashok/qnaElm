@@ -21,9 +21,6 @@ main =
 
 -- MODEL
 
-randomGifUrl : String
-randomGifUrl = "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag="
-
 knowledgebaseId : String 
 knowledgebaseId = "b693c8be-313c-434d-b3a7-dad2d4656039"
 
@@ -35,6 +32,9 @@ qnamakerUriBase = "https://westus.api.cognitive.microsoft.com/qnamaker/v1.0"
 
 builder : String 
 builder = qnamakerUriBase ++ "/knowledgebases/" ++ knowledgebaseId ++ "/generateAnswer"
+
+randomGifUrl : String
+randomGifUrl = "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag="
 
 payload : String 
 payload = "{\"question\":\"Why bother with hashing?\"}"
@@ -97,7 +97,7 @@ view model =
     , br [] []
     , img [src model.gifUrl] []
     ]
-
+ 
 footer : Html Msg
 footer = 
   div [id "footer"]
@@ -106,6 +106,7 @@ footer =
     rel "noopener noreferrer"] 
     [text version]
   ]
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
