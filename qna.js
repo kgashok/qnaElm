@@ -1564,8 +1564,7 @@ function toString(v)
 	var type = typeof v;
 	if (type === 'function')
 	{
-		var name = v.func ? v.func.name : v.name;
-		return '<function' + (name === '' ? '' : ':') + name + '>';
+		return '<function>';
 	}
 
 	if (type === 'boolean')
@@ -2072,6 +2071,13 @@ var _elm_lang$core$List$sortWith = _elm_lang$core$Native_List.sortWith;
 var _elm_lang$core$List$sortBy = _elm_lang$core$Native_List.sortBy;
 var _elm_lang$core$List$sort = function (xs) {
 	return A2(_elm_lang$core$List$sortBy, _elm_lang$core$Basics$identity, xs);
+};
+var _elm_lang$core$List$singleton = function (value) {
+	return {
+		ctor: '::',
+		_0: value,
+		_1: {ctor: '[]'}
+	};
 };
 var _elm_lang$core$List$drop = F2(
 	function (n, list) {
@@ -3520,15 +3526,8 @@ function setupIncomingPort(name, callback)
 		sentBeforeInit.push(value);
 	}
 
-	function postInitSend(incomingValue)
+	function postInitSend(value)
 	{
-		var result = A2(_elm_lang$core$Json_Decode$decodeValue, converter, incomingValue);
-		if (result.ctor === 'Err')
-		{
-			throw new Error('Trying to send an unexpected type of value through port `' + name + '`:\n' + result._0);
-		}
-
-		var value = result._0;
 		var temp = subs;
 		while (temp.ctor !== '[]')
 		{
@@ -3539,7 +3538,13 @@ function setupIncomingPort(name, callback)
 
 	function send(incomingValue)
 	{
-		currentSend(incomingValue);
+		var result = A2(_elm_lang$core$Json_Decode$decodeValue, converter, incomingValue);
+		if (result.ctor === 'Err')
+		{
+			throw new Error('Trying to send an unexpected type of value through port `' + name + '`:\n' + result._0);
+		}
+
+		currentSend(result._0);
 	}
 
 	return { send: send };
@@ -4160,7 +4165,7 @@ function endsWith(sub, str)
 function indexes(sub, str)
 {
 	var subLen = sub.length;
-	
+
 	if (subLen < 1)
 	{
 		return _elm_lang$core$Native_List.Nil;
@@ -4173,74 +4178,78 @@ function indexes(sub, str)
 	{
 		is.push(i);
 		i = i + subLen;
-	}	
-	
+	}
+
 	return _elm_lang$core$Native_List.fromArray(is);
 }
+
 
 function toInt(s)
 {
 	var len = s.length;
+
+	// if empty
 	if (len === 0)
 	{
-		return _elm_lang$core$Result$Err("could not convert string '" + s + "' to an Int" );
+		return intErr(s);
 	}
-	var start = 0;
-	if (s[0] === '-')
+
+	// if hex
+	var c = s[0];
+	if (c === '0' && s[1] === 'x')
 	{
-		if (len === 1)
+		for (var i = 2; i < len; ++i)
 		{
-			return _elm_lang$core$Result$Err("could not convert string '" + s + "' to an Int" );
+			var c = s[i];
+			if (('0' <= c && c <= '9') || ('A' <= c && c <= 'F') || ('a' <= c && c <= 'f'))
+			{
+				continue;
+			}
+			return intErr(s);
 		}
-		start = 1;
+		return _elm_lang$core$Result$Ok(parseInt(s, 16));
 	}
-	for (var i = start; i < len; ++i)
+
+	// is decimal
+	if (c > '9' || (c < '0' && c !== '-' && c !== '+'))
+	{
+		return intErr(s);
+	}
+	for (var i = 1; i < len; ++i)
 	{
 		var c = s[i];
 		if (c < '0' || '9' < c)
 		{
-			return _elm_lang$core$Result$Err("could not convert string '" + s + "' to an Int" );
+			return intErr(s);
 		}
 	}
+
 	return _elm_lang$core$Result$Ok(parseInt(s, 10));
 }
 
+function intErr(s)
+{
+	return _elm_lang$core$Result$Err("could not convert string '" + s + "' to an Int");
+}
+
+
 function toFloat(s)
 {
-	var len = s.length;
-	if (len === 0)
+	// check if it is a hex, octal, or binary number
+	if (s.length === 0 || /[\sxbo]/.test(s))
 	{
-		return _elm_lang$core$Result$Err("could not convert string '" + s + "' to a Float" );
+		return floatErr(s);
 	}
-	var start = 0;
-	if (s[0] === '-')
-	{
-		if (len === 1)
-		{
-			return _elm_lang$core$Result$Err("could not convert string '" + s + "' to a Float" );
-		}
-		start = 1;
-	}
-	var dotCount = 0;
-	for (var i = start; i < len; ++i)
-	{
-		var c = s[i];
-		if ('0' <= c && c <= '9')
-		{
-			continue;
-		}
-		if (c === '.')
-		{
-			dotCount += 1;
-			if (dotCount <= 1)
-			{
-				continue;
-			}
-		}
-		return _elm_lang$core$Result$Err("could not convert string '" + s + "' to a Float" );
-	}
-	return _elm_lang$core$Result$Ok(parseFloat(s));
+	var n = +s;
+	// faster isNaN check
+	return n === n ? _elm_lang$core$Result$Ok(n) : floatErr(s);
 }
+
+function floatErr(s)
+{
+	return _elm_lang$core$Result$Err("could not convert string '" + s + "' to a Float");
+}
+
 
 function toList(str)
 {
@@ -5695,11 +5704,6 @@ function badToString(problem)
 				problem = problem.rest;
 				break;
 
-			case 'index':
-				context += '[' + problem.index + ']';
-				problem = problem.rest;
-				break;
-
 			case 'oneOf':
 				var problems = problem.problems;
 				for (var i = 0; i < problems.length; i++)
@@ -6427,9 +6431,9 @@ function on(name, options, decoder)
 
 function equalEvents(a, b)
 {
-	if (!a.options === b.options)
+	if (a.options !== b.options)
 	{
-		if (a.stopPropagation !== b.stopPropagation || a.preventDefault !== b.preventDefault)
+		if (a.options.stopPropagation !== b.options.stopPropagation || a.options.preventDefault !== b.options.preventDefault)
 		{
 			return false;
 		}
@@ -7705,7 +7709,7 @@ function normalRenderer(parentNode, view)
 var rAF =
 	typeof requestAnimationFrame !== 'undefined'
 		? requestAnimationFrame
-		: function(callback) { callback(); };
+		: function(callback) { setTimeout(callback, 1000 / 60); };
 
 function makeStepper(domNode, view, initialVirtualNode, eventNode)
 {
@@ -9030,7 +9034,7 @@ var _elm_lang$http$Http$StringPart = F2(
 var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
 
 var _user$project$Version$gitRepo = 'https://github.com/kgashok/qnaElm';
-var _user$project$Version$version = 'v0.0-11-g3fdc0ac';
+var _user$project$Version$version = 'v0.0-21-g355b963';
 
 var _user$project$Qna$decodeGifUrl = A2(
 	_elm_lang$core$Json_Decode$at,
@@ -9100,52 +9104,63 @@ var _user$project$Qna$footer = A2(
 		_1: {ctor: '[]'}
 	});
 var _user$project$Qna$payload = '{\"question\":\"Why bother with hashing?\"}';
-var _user$project$Qna$qnamakerUriBase = 'https://westus.api.cognitive.microsoft.com/qnamaker/v1.0';
-var _user$project$Qna$qnamakerSubscriptionKey = 'a6fbd18b9b2e45b59f2ce4f73a56e1e4';
-var _user$project$Qna$knowledgebaseId = 'b693c8be-313c-434d-b3a7-dad2d4656039';
-var _user$project$Qna$builder = A2(
-	_elm_lang$core$Basics_ops['++'],
-	_user$project$Qna$qnamakerUriBase,
-	A2(
-		_elm_lang$core$Basics_ops['++'],
-		'/knowledgebases/',
-		A2(_elm_lang$core$Basics_ops['++'], _user$project$Qna$knowledgebaseId, '/generateAnswer')));
 var _user$project$Qna$randomGifUrl = 'https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=';
+var _user$project$Qna$qnamakerUriBase = 'https://westus.api.cognitive.microsoft.com/qnamaker/v1.0';
+var _user$project$Qna$builder = function (kid) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		_user$project$Qna$qnamakerUriBase,
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			'/knowledgebases/',
+			A2(_elm_lang$core$Basics_ops['++'], kid, '/generateAnswer')));
+};
+var _user$project$Qna$qnamakerSubscriptionKey = 'a6fbd18b9b2e45b59f2ce4f73a56e1e4';
+var _user$project$Qna$knowledgebaseId3 = 'ed3f0ded-b71e-43ff-93c6-a34454702b64';
+var _user$project$Qna$knowledgebaseId2 = '8c59a93f-1622-4ce3-b848-dcc56f10f2b0';
+var _user$project$Qna$knowledgebaseId = 'b693c8be-313c-434d-b3a7-dad2d4656039';
 var _user$project$Qna$Model = F4(
 	function (a, b, c, d) {
 		return {topic: a, gifUrl: b, knowledgeBase: c, answer: d};
 	});
+var _user$project$Qna$QnAService = F2(
+	function (a, b) {
+		return {name: a, url: b};
+	});
+var _user$project$Qna$kBase = {
+	ctor: '::',
+	_0: A2(
+		_user$project$Qna$QnAService,
+		'cse',
+		_user$project$Qna$builder(_user$project$Qna$knowledgebaseId2)),
+	_1: {
+		ctor: '::',
+		_0: A2(
+			_user$project$Qna$QnAService,
+			'ds',
+			_user$project$Qna$builder(_user$project$Qna$knowledgebaseId)),
+		_1: {
+			ctor: '::',
+			_0: A2(
+				_user$project$Qna$QnAService,
+				'cpp',
+				_user$project$Qna$builder(_user$project$Qna$knowledgebaseId3)),
+			_1: {ctor: '[]'}
+		}
+	}
+};
+var _user$project$Qna$initialModel = A4(
+	_user$project$Qna$Model,
+	'barrel of monkeys',
+	'img/barrelOfMonkeys.gif',
+	_user$project$Qna$kBase,
+	{
+		ctor: '::',
+		_0: 'Barrel of Monkeys',
+		_1: {ctor: '[]'}
+	});
 var _user$project$Qna$NewAnswer = function (a) {
 	return {ctor: 'NewAnswer', _0: a};
-};
-var _user$project$Qna$getAnswer = function (topic) {
-	var settings = {
-		method: 'POST',
-		headers: {
-			ctor: '::',
-			_0: A2(_elm_lang$http$Http$header, 'Ocp-Apim-Subscription-Key', 'a6fbd18b9b2e45b59f2ce4f73a56e1e4'),
-			_1: {
-				ctor: '::',
-				_0: A2(_elm_lang$http$Http$header, 'Cache-Control', 'no-cache'),
-				_1: {ctor: '[]'}
-			}
-		},
-		url: _user$project$Qna$builder,
-		body: _elm_lang$http$Http$jsonBody(
-			_user$project$Qna$encodeQuestion(topic)),
-		expect: _elm_lang$http$Http$expectJson(_user$project$Qna$decodeAnswer),
-		timeout: _elm_lang$core$Maybe$Nothing,
-		withCredentials: false
-	};
-	var request = _elm_lang$http$Http$request(settings);
-	return A2(_elm_lang$http$Http$send, _user$project$Qna$NewAnswer, request);
-};
-var _user$project$Qna$init = function (topic) {
-	return {
-		ctor: '_Tuple2',
-		_0: A4(_user$project$Qna$Model, topic, 'img/barrelOfMonkeys.gif', _user$project$Qna$builder, 'Barrel of Monkeys'),
-		_1: _user$project$Qna$getAnswer(topic)
-	};
 };
 var _user$project$Qna$Topic = function (a) {
 	return {ctor: 'Topic', _0: a};
@@ -9158,36 +9173,111 @@ var _user$project$Qna$getRandomGif = function (topic) {
 	var request = A2(_elm_lang$http$Http$get, url, _user$project$Qna$decodeGifUrl);
 	return A2(_elm_lang$http$Http$send, _user$project$Qna$NewGif, request);
 };
+var _user$project$Qna$getAnswer = function (model) {
+	var settings = {
+		method: 'POST',
+		headers: {
+			ctor: '::',
+			_0: A2(_elm_lang$http$Http$header, 'Ocp-Apim-Subscription-Key', 'a6fbd18b9b2e45b59f2ce4f73a56e1e4'),
+			_1: {
+				ctor: '::',
+				_0: A2(_elm_lang$http$Http$header, 'Cache-Control', 'no-cache'),
+				_1: {ctor: '[]'}
+			}
+		},
+		url: A2(
+			_elm_lang$core$Maybe$withDefault,
+			'QED',
+			_elm_lang$core$List$head(
+				A2(
+					_elm_lang$core$List$map,
+					function (_) {
+						return _.url;
+					},
+					model.knowledgeBase))),
+		body: _elm_lang$http$Http$jsonBody(
+			_user$project$Qna$encodeQuestion(model.topic)),
+		expect: _elm_lang$http$Http$expectJson(_user$project$Qna$decodeAnswer),
+		timeout: _elm_lang$core$Maybe$Nothing,
+		withCredentials: false
+	};
+	var request = _elm_lang$http$Http$request(settings);
+	var _p0 = settings.url;
+	if (_p0 === 'QED') {
+		return _user$project$Qna$getRandomGif(model.topic);
+	} else {
+		return A2(_elm_lang$http$Http$send, _user$project$Qna$NewAnswer, request);
+	}
+};
+var _user$project$Qna$init = {
+	ctor: '_Tuple2',
+	_0: _user$project$Qna$initialModel,
+	_1: _user$project$Qna$getAnswer(_user$project$Qna$initialModel)
+};
 var _user$project$Qna$update = F2(
 	function (msg, model) {
-		var _p0 = msg;
-		switch (_p0.ctor) {
+		var _p1 = msg;
+		switch (_p1.ctor) {
 			case 'MorePlease':
+				var model_ = _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						answer: {ctor: '[]'},
+						knowledgeBase: _user$project$Qna$kBase
+					});
 				return {
 					ctor: '_Tuple2',
-					_0: model,
-					_1: _user$project$Qna$getAnswer(model.topic)
+					_0: model_,
+					_1: _user$project$Qna$getAnswer(model_)
 				};
 			case 'NewGif':
-				if (_p0._0.ctor === 'Ok') {
+				if (_p1._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{gifUrl: _p0._0._0}),
+							{gifUrl: _p1._0._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'NewAnswer':
-				if (_p0._0.ctor === 'Ok') {
+				if (_p1._0.ctor === 'Ok') {
+					var kBaseTag = A2(
+						_elm_lang$core$Maybe$withDefault,
+						'NA',
+						_elm_lang$core$List$head(
+							A2(
+								_elm_lang$core$List$map,
+								function (_) {
+									return _.name;
+								},
+								model.knowledgeBase)));
+					var model_ = _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							answer: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$core$Basics_ops['++'],
+									kBaseTag,
+									A2(_elm_lang$core$Basics_ops['++'], ':', _p1._0._0)),
+								_1: model.answer
+							},
+							knowledgeBase: A2(
+								_elm_lang$core$Maybe$withDefault,
+								{
+									ctor: '::',
+									_0: A2(_user$project$Qna$QnAService, 'QED', ''),
+									_1: {ctor: '[]'}
+								},
+								_elm_lang$core$List$tail(model.knowledgeBase))
+						});
 					return {
 						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{answer: _p0._0._0}),
-						_1: _user$project$Qna$getRandomGif(model.topic)
+						_0: model_,
+						_1: _user$project$Qna$getAnswer(model_)
 					};
 				} else {
 					return {
@@ -9195,7 +9285,11 @@ var _user$project$Qna$update = F2(
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								answer: _elm_lang$core$Basics$toString(_p0._0._0)
+								answer: {
+									ctor: '::',
+									_0: _elm_lang$core$Basics$toString(_p1._0._0),
+									_1: {ctor: '[]'}
+								}
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
@@ -9205,7 +9299,7 @@ var _user$project$Qna$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{topic: _p0._0}),
+						{topic: _p1._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 		}
@@ -9257,36 +9351,36 @@ var _user$project$Qna$view = function (model) {
 							},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text('More Please!'),
+								_0: _elm_lang$html$Html$text('Get answer!'),
 								_1: {ctor: '[]'}
 							}),
 						_1: {
 							ctor: '::',
 							_0: A2(
-								_elm_lang$html$Html$br,
+								_elm_lang$html$Html$div,
 								{ctor: '[]'},
-								{ctor: '[]'}),
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(
+										_elm_lang$core$Basics$toString(model.answer)),
+									_1: {ctor: '[]'}
+								}),
 							_1: {
 								ctor: '::',
 								_0: A2(
-									_elm_lang$html$Html$img,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$src(model.gifUrl),
-										_1: {ctor: '[]'}
-									},
+									_elm_lang$html$Html$br,
+									{ctor: '[]'},
 									{ctor: '[]'}),
 								_1: {
 									ctor: '::',
 									_0: A2(
-										_elm_lang$html$Html$div,
-										{ctor: '[]'},
+										_elm_lang$html$Html$img,
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html$text(
-												_elm_lang$core$Basics$toString(model.answer)),
+											_0: _elm_lang$html$Html_Attributes$src(model.gifUrl),
 											_1: {ctor: '[]'}
-										}),
+										},
+										{ctor: '[]'}),
 									_1: {ctor: '[]'}
 								}
 							}
@@ -9297,12 +9391,7 @@ var _user$project$Qna$view = function (model) {
 		});
 };
 var _user$project$Qna$main = _elm_lang$html$Html$program(
-	{
-		init: _user$project$Qna$init('barrel of monkeys'),
-		view: _user$project$Qna$view,
-		update: _user$project$Qna$update,
-		subscriptions: _user$project$Qna$subscriptions
-	})();
+	{init: _user$project$Qna$init, view: _user$project$Qna$view, update: _user$project$Qna$update, subscriptions: _user$project$Qna$subscriptions})();
 
 var Elm = {};
 Elm['Qna'] = Elm['Qna'] || {};

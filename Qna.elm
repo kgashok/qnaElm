@@ -49,18 +49,27 @@ payload = "{\"question\":\"Why bother with hashing?\"}"
 type alias Model =
   { topic : String
   , gifUrl : String
-  , knowledgeBase : List String 
+  , knowledgeBase : List QnAService
   , answer : List String
   }
+  
+type alias QnAService = 
+  { name : String 
+  , url  : String 
+  }
+
+kBase : List QnAService
+kBase = 
+  [ QnAService "cse" (builder knowledgebaseId2)
+  , QnAService "ds"  (builder knowledgebaseId) 
+  , QnAService "cpp" (builder knowledgebaseId3)
+  ]
 
 initialModel : Model 
 initialModel = 
   Model "barrel of monkeys" 
     "img/barrelOfMonkeys.gif" 
-    [ builder knowledgebaseId2 
-    , builder knowledgebaseId
-    , builder knowledgebaseId3
-    ] 
+    kBase 
     ["Barrel of Monkeys"]
 
 init : (Model, Cmd Msg)
@@ -86,13 +95,8 @@ update msg model =
     MorePlease ->
       -- (model, getRandomGif model.topic)
       let 
-        model_ = { model | answer = [], 
-                      knowledgeBase = 
-                        [ builder knowledgebaseId2 
-                        , builder knowledgebaseId
-                        , builder knowledgebaseId3
-                        ] 
-        } 
+        model_ = { model | answer   = [], 
+                      knowledgeBase = kBase } 
       in 
         (model_, getAnswer model_)
 
@@ -104,8 +108,13 @@ update msg model =
 
     NewAnswer (Ok answer) ->
       let 
-        model_ = { model | answer = answer :: model.answer,
-                    knowledgeBase = Maybe.withDefault ["QED"] (List.tail model.knowledgeBase)
+        kBaseTag = Maybe.withDefault "NA" 
+          (List.head (List.map .name model.knowledgeBase)) 
+        model_ = { model | answer = 
+                      (kBaseTag ++ ":" ++ answer) :: model.answer,
+                    knowledgeBase = 
+                      Maybe.withDefault [QnAService "QED" ""] 
+                        (List.tail model.knowledgeBase)
                  }
       in 
         ( model_, getAnswer model_) 
@@ -154,7 +163,8 @@ getAnswer model =
                   , Http.header "Cache-Control" "no-cache"
                   -- , Http.header "Content-Type" "application/json"
                   ]
-      , url     = Maybe.withDefault "QED" (List.head model.knowledgeBase)
+      , url     = 
+          Maybe.withDefault "QED" (List.head (List.map .url model.knowledgeBase))
       -- , body = emptyBody
       , body    = jsonBody (encodeQuestion model.topic) 
       , expect  = expectJson decodeAnswer
