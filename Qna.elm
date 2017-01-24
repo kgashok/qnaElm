@@ -140,7 +140,7 @@ getAnswer model =
                   , Http.header "Cache-Control" "no-cache"
                   -- , Http.header "Content-Type" "application/json"
                   ]
-      , url     = Maybe.withDefault knowledgebaseId2 (List.head model.knowledgeBase)
+      , url     = Maybe.withDefault "QED" (List.head model.knowledgeBase)
       -- , body = emptyBody
       , body    = jsonBody (encodeQuestion model.topic) 
       , expect  = expectJson decodeAnswer
@@ -150,7 +150,11 @@ getAnswer model =
     request =
       Http.request settings 
   in
-    Http.send NewAnswer request
+    case settings.url of 
+      "QED" -> 
+        Cmd.none 
+      _-> 
+        Http.send NewAnswer request
 
 encodeQuestion : String -> Encode.Value        
 encodeQuestion question =
