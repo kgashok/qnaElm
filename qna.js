@@ -11090,7 +11090,7 @@ var _marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape = _marcosh$elm_html_to_u
 var _marcosh$elm_html_to_unicode$ElmEscapeHtml$escape = _marcosh$elm_html_to_unicode$ElmEscapeHtml$convert(_marcosh$elm_html_to_unicode$ElmEscapeHtml$escapeChars);
 
 var _user$project$Version$gitRepo = 'https://github.com/kgashok/qnaElm';
-var _user$project$Version$version = 'v1.0-2-ga6a9b5f';
+var _user$project$Version$version = 'v1.0-3-g461d182';
 
 var _user$project$Qna$decodeGifUrl = A2(
 	_elm_lang$core$Json_Decode$at,
@@ -11203,7 +11203,6 @@ var _user$project$Qna$viewAllAnswers = function (model) {
 		{ctor: '[]'},
 		listOfAnswers);
 };
-var _user$project$Qna$payload = '{\"question\":\"Why bother with hashing?\"}';
 var _user$project$Qna$randomGifUrl = 'https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=';
 var _user$project$Qna$qnamakerUriBase = 'https://westus.api.cognitive.microsoft.com/qnamaker/v1.0';
 var _user$project$Qna$builder = function (kid) {
@@ -11262,6 +11261,40 @@ var _user$project$Qna$initialModel = A4(
 		ctor: '::',
 		_0: A2(_user$project$Qna$Answer, 'Unknown', 'Barrel of Monkeys'),
 		_1: {ctor: '[]'}
+	});
+var _user$project$Qna$addResponse = F2(
+	function (model, response) {
+		var truncatedKB = A2(
+			_elm_lang$core$Maybe$withDefault,
+			{
+				ctor: '::',
+				_0: A2(_user$project$Qna$QnAService, 'QED', ''),
+				_1: {ctor: '[]'}
+			},
+			_elm_lang$core$List$tail(model.knowledgeBase));
+		var kBase = A2(
+			_elm_lang$core$Maybe$withDefault,
+			'NA',
+			_elm_lang$core$List$head(
+				A2(
+					_elm_lang$core$List$map,
+					function (_) {
+						return _.name;
+					},
+					model.knowledgeBase)));
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				answer: {
+					ctor: '::',
+					_0: A2(
+						_user$project$Qna$Answer,
+						kBase,
+						_marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape(response)),
+					_1: model.answer
+				},
+				knowledgeBase: truncatedKB
+			});
 	});
 var _user$project$Qna$NewAnswer = function (a) {
 	return {ctor: 'NewAnswer', _0: a};
@@ -11348,72 +11381,17 @@ var _user$project$Qna$update = F2(
 				}
 			case 'NewAnswer':
 				if (_p1._0.ctor === 'Ok') {
-					var kBase = A2(
-						_elm_lang$core$Maybe$withDefault,
-						'NA',
-						_elm_lang$core$List$head(
-							A2(
-								_elm_lang$core$List$map,
-								function (_) {
-									return _.name;
-								},
-								model.knowledgeBase)));
-					var model_ = _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							answer: {
-								ctor: '::',
-								_0: A2(
-									_user$project$Qna$Answer,
-									kBase,
-									_marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape(_p1._0._0)),
-								_1: model.answer
-							},
-							knowledgeBase: A2(
-								_elm_lang$core$Maybe$withDefault,
-								{
-									ctor: '::',
-									_0: A2(_user$project$Qna$QnAService, 'QED', ''),
-									_1: {ctor: '[]'}
-								},
-								_elm_lang$core$List$tail(model.knowledgeBase))
-						});
+					var model_ = A2(_user$project$Qna$addResponse, model, _p1._0._0);
 					return {
 						ctor: '_Tuple2',
 						_0: model_,
 						_1: _user$project$Qna$getAnswer(model_)
 					};
 				} else {
-					var kBase = A2(
-						_elm_lang$core$Maybe$withDefault,
-						'NA',
-						_elm_lang$core$List$head(
-							A2(
-								_elm_lang$core$List$map,
-								function (_) {
-									return _.name;
-								},
-								model.knowledgeBase)));
-					var model_ = _elm_lang$core$Native_Utils.update(
+					var model_ = A2(
+						_user$project$Qna$addResponse,
 						model,
-						{
-							answer: {
-								ctor: '::',
-								_0: A2(
-									_user$project$Qna$Answer,
-									kBase,
-									_elm_lang$core$Basics$toString(_p1._0._0)),
-								_1: model.answer
-							},
-							knowledgeBase: A2(
-								_elm_lang$core$Maybe$withDefault,
-								{
-									ctor: '::',
-									_0: A2(_user$project$Qna$QnAService, 'QED', ''),
-									_1: {ctor: '[]'}
-								},
-								_elm_lang$core$List$tail(model.knowledgeBase))
-						});
+						_elm_lang$core$Basics$toString(_p1._0._0));
 					return {
 						ctor: '_Tuple2',
 						_0: model_,

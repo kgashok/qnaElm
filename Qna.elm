@@ -45,9 +45,6 @@ builder kid =
 randomGifUrl : String
 randomGifUrl = "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag="
 
-payload : String 
-payload = "{\"question\":\"Why bother with hashing?\"}"
-
 type alias Model =
   { topic : String
   , gifUrl : String
@@ -142,7 +139,6 @@ addResponse model response =
     { model | answer = (Answer kBase (unescape response)) :: model.answer, 
         knowledgeBase = truncatedKB }
 
-    
 -- VIEW
 
 view : Model -> Html Msg
@@ -199,8 +195,8 @@ getAnswer model =
                   , Http.header "Cache-Control" "no-cache"
                   -- , Http.header "Content-Type" "application/json"
                   ]
-      , url     = 
-          Maybe.withDefault "QED" (List.head (List.map .url model.knowledgeBase))
+      , url     = List.map .url model.knowledgeBase 
+                    |> List.head |> Maybe.withDefault "QED"
       -- , body = emptyBody
       , body    = jsonBody (encodeQuestion model.topic) 
       , expect  = expectJson decodeAnswer
