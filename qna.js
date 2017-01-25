@@ -11230,14 +11230,14 @@ var _user$project$Qna$kBase = {
 	ctor: '::',
 	_0: A2(
 		_user$project$Qna$QnAService,
-		'cse',
-		_user$project$Qna$builder(_user$project$Qna$knowledgebaseId2)),
+		'cpp',
+		_user$project$Qna$builder(_user$project$Qna$knowledgebaseId3)),
 	_1: {
 		ctor: '::',
 		_0: A2(
 			_user$project$Qna$QnAService,
-			'cpp',
-			_user$project$Qna$builder(_user$project$Qna$knowledgebaseId3)),
+			'cse',
+			_user$project$Qna$builder(_user$project$Qna$knowledgebaseId2)),
 		_1: {
 			ctor: '::',
 			_0: A2(
@@ -11254,12 +11254,12 @@ var _user$project$Qna$Answer = F2(
 	});
 var _user$project$Qna$initialModel = A4(
 	_user$project$Qna$Model,
-	'barrel of monkeys',
+	'what are algorithms?',
 	'img/barrelOfMonkeys.gif',
 	_user$project$Qna$kBase,
 	{
 		ctor: '::',
-		_0: A2(_user$project$Qna$Answer, 'Unknown', 'Barrel of Monkeys'),
+		_0: A2(_user$project$Qna$Answer, 'Unknown', 'algorithms are eating the world!'),
 		_1: {ctor: '[]'}
 	});
 var _user$project$Qna$addResponse = F2(
@@ -11420,62 +11420,73 @@ var _user$project$Qna$view = function (model) {
 		{
 			ctor: '::',
 			_0: A2(
-				_elm_lang$html$Html$h2,
+				_elm_lang$html$Html$h1,
 				{ctor: '[]'},
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text(model.topic),
+					_0: _elm_lang$html$Html$text('Elm QnA'),
 					_1: {ctor: '[]'}
 				}),
 			_1: {
 				ctor: '::',
-				_0: _user$project$Qna$footer,
+				_0: A2(
+					_elm_lang$html$Html$h2,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(model.topic),
+						_1: {ctor: '[]'}
+					}),
 				_1: {
 					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$input,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$type_('text'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$placeholder('Topic'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onInput(_user$project$Qna$Topic),
-									_1: {ctor: '[]'}
-								}
-							}
-						},
-						{ctor: '[]'}),
+					_0: _user$project$Qna$footer,
 					_1: {
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$button,
+							_elm_lang$html$Html$input,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(_user$project$Qna$MorePlease),
-								_1: {ctor: '[]'}
+								_0: _elm_lang$html$Html_Attributes$type_('text'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$placeholder('Topic'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onInput(_user$project$Qna$Topic),
+										_1: {ctor: '[]'}
+									}
+								}
 							},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text('Get Answers!'),
-								_1: {ctor: '[]'}
-							}),
+							{ctor: '[]'}),
 						_1: {
 							ctor: '::',
-							_0: _user$project$Qna$viewAllAnswers(model),
+							_0: A2(
+								_elm_lang$html$Html$button,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onClick(_user$project$Qna$MorePlease),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('Get Answers!'),
+									_1: {ctor: '[]'}
+								}),
 							_1: {
 								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$img,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$src(model.gifUrl),
-										_1: {ctor: '[]'}
-									},
-									{ctor: '[]'}),
-								_1: {ctor: '[]'}
+								_0: _user$project$Qna$viewAllAnswers(model),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$img,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$src(model.gifUrl),
+											_1: {ctor: '[]'}
+										},
+										{ctor: '[]'}),
+									_1: {ctor: '[]'}
+								}
 							}
 						}
 					}

@@ -130,7 +130,7 @@ li .answer {
 #footer {
   color: #a6a6a6;
   margin: 10px auto 0;
-  font-size: 14px;
+  font-size: 16px;
   text-align: center;
 }
 
@@ -196,8 +196,8 @@ ul {
   margin: 30px 0;
   padding: 0;
   list-style: none;
-  font-size: 1.5em;
-  font-weight: bold;
+  font-size: 1.2em;
+  font-weight: normal;
   text-align: left;
 }
 

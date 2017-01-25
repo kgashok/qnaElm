@@ -144,7 +144,8 @@ addResponse model response =
 view : Model -> Html Msg
 view model =
   div [ class "example example-dotted"]
-    [ h2 [] [text model.topic]
+    [ h1 [] [ text "Elm QnA" ]
+    , h2 [] [ text model.topic ]
     , footer
     , input [ type_ "text", placeholder "Topic", onInput Topic ] []
     , button [ onClick MorePlease ] [ text "Get Answers!" ]
