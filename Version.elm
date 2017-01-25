@@ -3,7 +3,7 @@ module Version exposing (..) -- where
 
 
 version : String 
-version = "v1.0-3-g461d182"
+version = "v1.0-14-g522db86"
 
 gitRepo : String 
 gitRepo = "https://github.com/kgashok/qnaElm"

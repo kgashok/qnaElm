@@ -11090,7 +11090,7 @@ var _marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape = _marcosh$elm_html_to_u
 var _marcosh$elm_html_to_unicode$ElmEscapeHtml$escape = _marcosh$elm_html_to_unicode$ElmEscapeHtml$convert(_marcosh$elm_html_to_unicode$ElmEscapeHtml$escapeChars);
 
 var _user$project$Version$gitRepo = 'https://github.com/kgashok/qnaElm';
-var _user$project$Version$version = 'v1.0-3-g461d182';
+var _user$project$Version$version = 'v1.0-14-g522db86';
 
 var _user$project$Qna$decodeGifUrl = A2(
 	_elm_lang$core$Json_Decode$at,
@@ -11430,62 +11430,73 @@ var _user$project$Qna$view = function (model) {
 			_1: {
 				ctor: '::',
 				_0: A2(
-					_elm_lang$html$Html$h2,
-					{ctor: '[]'},
+					_elm_lang$html$Html$hr,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(model.topic),
+						_0: _elm_lang$html$Html_Attributes$class('style8'),
 						_1: {ctor: '[]'}
-					}),
+					},
+					{ctor: '[]'}),
 				_1: {
 					ctor: '::',
-					_0: _user$project$Qna$footer,
+					_0: A2(
+						_elm_lang$html$Html$h2,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(model.topic),
+							_1: {ctor: '[]'}
+						}),
 					_1: {
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$input,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$type_('text'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$placeholder('Topic'),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Events$onInput(_user$project$Qna$Topic),
-										_1: {ctor: '[]'}
-									}
-								}
-							},
-							{ctor: '[]'}),
+						_0: _user$project$Qna$footer,
 						_1: {
 							ctor: '::',
 							_0: A2(
-								_elm_lang$html$Html$button,
+								_elm_lang$html$Html$input,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onClick(_user$project$Qna$MorePlease),
-									_1: {ctor: '[]'}
+									_0: _elm_lang$html$Html_Attributes$type_('text'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$placeholder('Topic'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Events$onInput(_user$project$Qna$Topic),
+											_1: {ctor: '[]'}
+										}
+									}
 								},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text('Get Answers!'),
-									_1: {ctor: '[]'}
-								}),
+								{ctor: '[]'}),
 							_1: {
 								ctor: '::',
-								_0: _user$project$Qna$viewAllAnswers(model),
+								_0: A2(
+									_elm_lang$html$Html$button,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onClick(_user$project$Qna$MorePlease),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('Get Answers!'),
+										_1: {ctor: '[]'}
+									}),
 								_1: {
 									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$img,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$src(model.gifUrl),
-											_1: {ctor: '[]'}
-										},
-										{ctor: '[]'}),
-									_1: {ctor: '[]'}
+									_0: _user$project$Qna$viewAllAnswers(model),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$img,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$src(model.gifUrl),
+												_1: {ctor: '[]'}
+											},
+											{ctor: '[]'}),
+										_1: {ctor: '[]'}
+									}
 								}
 							}
 						}
