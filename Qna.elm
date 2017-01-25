@@ -115,32 +115,34 @@ update msg model =
 
     NewAnswer (Ok answer) ->
       let 
-        kBase = Maybe.withDefault "NA" 
-          (List.head (List.map .name model.knowledgeBase)) 
-        model_ = { model | answer = 
-                      (Answer kBase (unescape answer)) :: model.answer,
-                    knowledgeBase = 
-                      Maybe.withDefault [QnAService "QED" ""] 
-                        (List.tail model.knowledgeBase)
-                 }
+        model_ = addResponse model answer
       in 
-        ( model_, getAnswer model_) 
-    NewAnswer (Err err) ->
+        (model_, getAnswer model_)            
+
+    NewAnswer (Err error) ->
       let 
-        kBase = Maybe.withDefault "NA" 
-          (List.head (List.map .name model.knowledgeBase)) 
-        model_ = { model | answer = 
-                    (Answer kBase (toString err)) :: model.answer,
-                        knowledgeBase = 
-                          Maybe.withDefault [QnAService "QED" ""] 
-                            (List.tail model.knowledgeBase)
-                 }
-      in
-        ( model_, getAnswer model_ )
+        model_ = addResponse model (toString error)
+      in 
+        (model_, getAnswer model_)
 
     Topic s -> 
       ( {model |topic = s}, Cmd.none)
 
+addResponse : Model -> String -> Model 
+addResponse model response = 
+  let 
+    kBase = model.knowledgeBase
+      |> List.map .name 
+      |> List.head 
+      |> Maybe.withDefault "NA"
+    truncatedKB = model.knowledgeBase
+      |> List.tail
+      |> Maybe.withDefault [QnAService "QED" ""]
+  in 
+    { model | answer = (Answer kBase (unescape response)) :: model.answer, 
+        knowledgeBase = truncatedKB }
+
+    
 -- VIEW
 
 view : Model -> Html Msg
