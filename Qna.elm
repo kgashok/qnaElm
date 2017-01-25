@@ -64,8 +64,8 @@ type alias Answer =
 
 kBase : List QnAService
 kBase = 
-  [ QnAService "cse" (builder knowledgebaseId2)
-  , QnAService "cpp" (builder knowledgebaseId3)
+  [ QnAService "cpp" (builder knowledgebaseId3)
+  , QnAService "cse" (builder knowledgebaseId2)
   , QnAService "ds"  (builder knowledgebaseId) 
   ]
 
