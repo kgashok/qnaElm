@@ -71,10 +71,10 @@ kBase =
 
 initialModel : Model 
 initialModel = 
-  Model "barrel of monkeys" 
+  Model "what are algorithms?" 
     "img/barrelOfMonkeys.gif" 
     kBase 
-    [Answer "Unknown" "Barrel of Monkeys"]
+    [Answer "Unknown" "algorithms are eating the world!"]
 
 init : (Model, Cmd Msg)
 init  =
