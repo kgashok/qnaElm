@@ -145,6 +145,7 @@ view : Model -> Html Msg
 view model =
   div [ class "example example-dotted"]
     [ h1 [] [ text "Elm QnA" ]
+    , hr [class "style8"] []
     , h2 [] [ text model.topic ]
     , footer
     , input [ type_ "text", placeholder "Topic", onInput Topic ] []
