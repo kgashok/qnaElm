@@ -11090,7 +11090,7 @@ var _marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape = _marcosh$elm_html_to_u
 var _marcosh$elm_html_to_unicode$ElmEscapeHtml$escape = _marcosh$elm_html_to_unicode$ElmEscapeHtml$convert(_marcosh$elm_html_to_unicode$ElmEscapeHtml$escapeChars);
 
 var _user$project$Version$gitRepo = 'https://github.com/kgashok/qnaElm';
-var _user$project$Version$version = 'v1.0-14-g522db86';
+var _user$project$Version$version = 'v1.0-17-g70bb154';
 
 var _user$project$Qna$decodeGifUrl = A2(
 	_elm_lang$core$Json_Decode$at,
@@ -11203,6 +11203,7 @@ var _user$project$Qna$viewAllAnswers = function (model) {
 		{ctor: '[]'},
 		listOfAnswers);
 };
+var _user$project$Qna$subscriptionKey = 'a6fbd18b9b2e45b59f2ce4f73a56e1e4';
 var _user$project$Qna$randomGifUrl = 'https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=';
 var _user$project$Qna$qnamakerUriBase = 'https://westus.api.cognitive.microsoft.com/qnamaker/v1.0';
 var _user$project$Qna$builder = function (kid) {
@@ -11262,40 +11263,6 @@ var _user$project$Qna$initialModel = A4(
 		_0: A2(_user$project$Qna$Answer, 'Unknown', 'algorithms are eating the world!'),
 		_1: {ctor: '[]'}
 	});
-var _user$project$Qna$addResponse = F2(
-	function (model, response) {
-		var truncatedKB = A2(
-			_elm_lang$core$Maybe$withDefault,
-			{
-				ctor: '::',
-				_0: A2(_user$project$Qna$QnAService, 'QED', ''),
-				_1: {ctor: '[]'}
-			},
-			_elm_lang$core$List$tail(model.knowledgeBase));
-		var kBase = A2(
-			_elm_lang$core$Maybe$withDefault,
-			'NA',
-			_elm_lang$core$List$head(
-				A2(
-					_elm_lang$core$List$map,
-					function (_) {
-						return _.name;
-					},
-					model.knowledgeBase)));
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{
-				answer: {
-					ctor: '::',
-					_0: A2(
-						_user$project$Qna$Answer,
-						kBase,
-						_marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape(response)),
-					_1: model.answer
-				},
-				knowledgeBase: truncatedKB
-			});
-	});
 var _user$project$Qna$NewAnswer = function (a) {
 	return {ctor: 'NewAnswer', _0: a};
 };
@@ -11310,51 +11277,70 @@ var _user$project$Qna$getRandomGif = function (topic) {
 	var request = A2(_elm_lang$http$Http$get, url, _user$project$Qna$decodeGifUrl);
 	return A2(_elm_lang$http$Http$send, _user$project$Qna$NewGif, request);
 };
-var _user$project$Qna$getAnswer = function (model) {
-	var settings = {
-		method: 'POST',
-		headers: {
-			ctor: '::',
-			_0: A2(_elm_lang$http$Http$header, 'Ocp-Apim-Subscription-Key', 'a6fbd18b9b2e45b59f2ce4f73a56e1e4'),
-			_1: {
-				ctor: '::',
-				_0: A2(_elm_lang$http$Http$header, 'Cache-Control', 'no-cache'),
-				_1: {ctor: '[]'}
-			}
-		},
-		url: A2(
-			_elm_lang$core$Maybe$withDefault,
-			'QED',
-			_elm_lang$core$List$head(
-				A2(
-					_elm_lang$core$List$map,
-					function (_) {
-						return _.url;
+var _user$project$Qna$addResponse = F2(
+	function (model, response) {
+		var _p0 = model.knowledgeBase;
+		if (_p0.ctor === '[]') {
+			return {
+				ctor: '_Tuple2',
+				_0: model,
+				_1: _user$project$Qna$getRandomGif(model.topic)
+			};
+		} else {
+			var _p2 = _p0._0;
+			var settings = {
+				method: 'POST',
+				headers: {
+					ctor: '::',
+					_0: A2(_elm_lang$http$Http$header, 'Ocp-Apim-Subscription-Key', _user$project$Qna$subscriptionKey),
+					_1: {
+						ctor: '::',
+						_0: A2(_elm_lang$http$Http$header, 'Cache-Control', 'no-cache'),
+						_1: {ctor: '[]'}
+					}
+				},
+				url: _p2.url,
+				body: _elm_lang$http$Http$jsonBody(
+					_user$project$Qna$encodeQuestion(model.topic)),
+				expect: _elm_lang$http$Http$expectJson(_user$project$Qna$decodeAnswer),
+				timeout: _elm_lang$core$Maybe$Nothing,
+				withCredentials: false
+			};
+			var request = _elm_lang$http$Http$request(settings);
+			var model_ = _elm_lang$core$Native_Utils.update(
+				model,
+				{
+					answer: {
+						ctor: '::',
+						_0: A2(
+							_user$project$Qna$Answer,
+							_p2.name,
+							_marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape(response)),
+						_1: model.answer
 					},
-					model.knowledgeBase))),
-		body: _elm_lang$http$Http$jsonBody(
-			_user$project$Qna$encodeQuestion(model.topic)),
-		expect: _elm_lang$http$Http$expectJson(_user$project$Qna$decodeAnswer),
-		timeout: _elm_lang$core$Maybe$Nothing,
-		withCredentials: false
-	};
-	var request = _elm_lang$http$Http$request(settings);
-	var _p0 = settings.url;
-	if (_p0 === 'QED') {
-		return _user$project$Qna$getRandomGif(model.topic);
-	} else {
-		return A2(_elm_lang$http$Http$send, _user$project$Qna$NewAnswer, request);
-	}
-};
-var _user$project$Qna$init = {
-	ctor: '_Tuple2',
-	_0: _user$project$Qna$initialModel,
-	_1: _user$project$Qna$getAnswer(_user$project$Qna$initialModel)
-};
+					knowledgeBase: _p0._1
+				});
+			var _p1 = response;
+			if (_p1 === '') {
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: A2(_elm_lang$http$Http$send, _user$project$Qna$NewAnswer, request)
+				};
+			} else {
+				return {
+					ctor: '_Tuple2',
+					_0: model_,
+					_1: A2(_elm_lang$http$Http$send, _user$project$Qna$NewAnswer, request)
+				};
+			}
+		}
+	});
+var _user$project$Qna$init = A2(_user$project$Qna$addResponse, _user$project$Qna$initialModel, '');
 var _user$project$Qna$update = F2(
 	function (msg, model) {
-		var _p1 = msg;
-		switch (_p1.ctor) {
+		var _p3 = msg;
+		switch (_p3.ctor) {
 			case 'MorePlease':
 				var model_ = _elm_lang$core$Native_Utils.update(
 					model,
@@ -11362,48 +11348,34 @@ var _user$project$Qna$update = F2(
 						answer: {ctor: '[]'},
 						knowledgeBase: _user$project$Qna$kBase
 					});
-				return {
-					ctor: '_Tuple2',
-					_0: model_,
-					_1: _user$project$Qna$getAnswer(model_)
-				};
+				return A2(_user$project$Qna$addResponse, model_, '');
 			case 'NewGif':
-				if (_p1._0.ctor === 'Ok') {
+				if (_p3._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{gifUrl: _p1._0._0}),
+							{gifUrl: _p3._0._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'NewAnswer':
-				if (_p1._0.ctor === 'Ok') {
-					var model_ = A2(_user$project$Qna$addResponse, model, _p1._0._0);
-					return {
-						ctor: '_Tuple2',
-						_0: model_,
-						_1: _user$project$Qna$getAnswer(model_)
-					};
+				if (_p3._0.ctor === 'Ok') {
+					return A2(_user$project$Qna$addResponse, model, _p3._0._0);
 				} else {
-					var model_ = A2(
+					return A2(
 						_user$project$Qna$addResponse,
 						model,
-						_elm_lang$core$Basics$toString(_p1._0._0));
-					return {
-						ctor: '_Tuple2',
-						_0: model_,
-						_1: _user$project$Qna$getAnswer(model_)
-					};
+						_elm_lang$core$Basics$toString(_p3._0._0));
 				}
 			default:
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{topic: _p1._0}),
+						{topic: _p3._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 		}
