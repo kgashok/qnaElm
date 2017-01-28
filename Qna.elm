@@ -48,6 +48,9 @@ subscriptionKey = "a6fbd18b9b2e45b59f2ce4f73a56e1e4"
 randomGifUrl : String
 randomGifUrl = "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag="
 
+subscriptionKey : String 
+subscriptionKey = "a6fbd18b9b2e45b59f2ce4f73a56e1e4"
+
 type alias Model =
   { topic : String
   , gifUrl : String
@@ -81,8 +84,7 @@ initialModel =
 
 init : (Model, Cmd Msg)
 init  =
-  ( initialModel 
-  , getAnswer initialModel 
+  ( addResponse initialModel ""
   --, (Cmd.batch [getRandomGif topic, getAnswer topic])
   )
 
@@ -104,8 +106,8 @@ update msg model =
       let 
         model_ = { model | answer   = [], 
                       knowledgeBase = kBase } 
-      in 
-        (model_, getAnswer model_)
+      in
+        addResponse model_ ""
 
     NewGif (Ok newUrl) ->
       ( { model | gifUrl = newUrl }, Cmd.none)
@@ -114,16 +116,10 @@ update msg model =
       (model, Cmd.none)
 
     NewAnswer (Ok answer) ->
-      let 
-        model_ = addResponse model answer
-      in 
-        (model_, getAnswer model_)            
+      addResponse model answer
 
     NewAnswer (Err error) ->
-      let 
-        model_ = addResponse model (toString error)
-      in 
-        (model_, getAnswer model_)
+      addResponse model (toString error)
 
     Topic s -> 
       ( {model |topic = s}, Cmd.none)
@@ -214,6 +210,7 @@ getAnswer model =
           Http.request settings 
       in
         Http.send NewAnswer request
+
 
 encodeQuestion : String -> Encode.Value        
 encodeQuestion question =
