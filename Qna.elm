@@ -129,18 +129,15 @@ update msg model =
       ( {model |topic = s}, Cmd.none)
 
 addResponse : Model -> String -> Model 
-addResponse model response = 
-  let 
-    kBase = model.knowledgeBase
-      |> List.map .name 
-      |> List.head 
-      |> Maybe.withDefault "NA"
-    truncatedKB = model.knowledgeBase
-      |> List.tail
-      |> Maybe.withDefault [QnAService "QED" ""]
-  in 
-    { model | answer = (Answer kBase (unescape response)) :: model.answer, 
-        knowledgeBase = truncatedKB }
+addResponse model response =
+  case model.knowledgeBase of 
+    [] -> 
+      model 
+    
+    kHead :: kTail -> 
+      { model | answer = 
+          (Answer kHead.name (unescape response)) :: model.answer, 
+          knowledgeBase = kTail } 
 
 -- VIEW
 
