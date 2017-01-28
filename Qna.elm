@@ -78,7 +78,7 @@ kBase =
 initialModel : Model 
 initialModel = 
   Model "what are algorithms?" 
-    "img/barrelOfMonkeys.gif" 
+    "img/searchComparison.gif" 
     kBase 
     [Answer "Unknown" "algorithms are eating the world!" "0.0"]
 
@@ -197,7 +197,7 @@ footer =
     rel "noopener noreferrer"] 
     [text version]
   ]
-
+ 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
