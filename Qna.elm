@@ -127,7 +127,6 @@ update msg model =
         in 
           ( model_, getAnswer model_) 
 
-
     Topic s -> 
       ( {model |topic = s}, Cmd.none)
 
@@ -198,25 +197,15 @@ getAnswer model =
     [] -> 
       getRandomGif model.topic 
     
-    kHead :: kTail -> 
-      
+    kHead :: kTail ->       
       let
-        settings =
-          { method  = "POST"
-          , headers = 
-            [ Http.header "Ocp-Apim-Subscription-Key" qnamakerSubscriptionKey
-            , Http.header "Cache-Control" "no-cache"
-            -- , Http.header "Content-Type" "application/json"
-            ]
-          , url     = kHead.url
-          -- , body = emptyBody
-          , body    = jsonBody (encodeQuestion model.topic) 
-          , expect  = expectJson decodeResponse
-          , timeout = Nothing
-          , withCredentials = False
-          }
+        settings_ = { postSettings | 
+          url = kHead.url, 
+          body = jsonBody (encodeQuestion model.topic),
+          expect  = expectJson decodeResponse }
+
         request =
-          Http.request settings 
+          Http.request settings_
       in
         Http.send NewResponse request
 
@@ -247,6 +236,33 @@ getRandomGif topic =
 decodeGifUrl : Decode.Decoder String
 decodeGifUrl =
   Decode.at ["data", "image_url"] Decode.string
+
+postSettings = 
+  { method  = "POST"
+  , headers = 
+    [ Http.header "Ocp-Apim-Subscription-Key" qnamakerSubscriptionKey
+    , Http.header "Cache-Control" "no-cache"
+    -- , Http.header "Content-Type" "application/json"
+    ]
+  , url     = ""
+  -- , body = emptyBody
+  , body    = emptyBody 
+  , expect  = expectJson decodeResponse
+  , timeout = Nothing
+  , withCredentials = False
+  }
+
+{--
+  postSettings: { body : Body
+    , expect : Expect Response
+    , headers : List Header
+    , method : String
+    , timeout : Maybe a
+    , url : String
+    , withCredentials : Bool
+    }
+
+--}
 
 {--getReponse : Cmd Msg 
 getReponse = 

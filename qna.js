@@ -11309,6 +11309,23 @@ var _user$project$Qna$decodeResponse = A3(
 	_user$project$Qna$Response,
 	A2(_elm_lang$core$Json_Decode$field, 'answer', _elm_lang$core$Json_Decode$string),
 	A2(_elm_lang$core$Json_Decode$field, 'score', _elm_lang$core$Json_Decode$string));
+var _user$project$Qna$postSettings = {
+	method: 'POST',
+	headers: {
+		ctor: '::',
+		_0: A2(_elm_lang$http$Http$header, 'Ocp-Apim-Subscription-Key', _user$project$Qna$qnamakerSubscriptionKey),
+		_1: {
+			ctor: '::',
+			_0: A2(_elm_lang$http$Http$header, 'Cache-Control', 'no-cache'),
+			_1: {ctor: '[]'}
+		}
+	},
+	url: '',
+	body: _elm_lang$http$Http$emptyBody,
+	expect: _elm_lang$http$Http$expectJson(_user$project$Qna$decodeResponse),
+	timeout: _elm_lang$core$Maybe$Nothing,
+	withCredentials: false
+};
 var _user$project$Qna$NewResponse = function (a) {
 	return {ctor: 'NewResponse', _0: a};
 };
@@ -11328,25 +11345,15 @@ var _user$project$Qna$getAnswer = function (model) {
 	if (_p1.ctor === '[]') {
 		return _user$project$Qna$getRandomGif(model.topic);
 	} else {
-		var settings = {
-			method: 'POST',
-			headers: {
-				ctor: '::',
-				_0: A2(_elm_lang$http$Http$header, 'Ocp-Apim-Subscription-Key', _user$project$Qna$qnamakerSubscriptionKey),
-				_1: {
-					ctor: '::',
-					_0: A2(_elm_lang$http$Http$header, 'Cache-Control', 'no-cache'),
-					_1: {ctor: '[]'}
-				}
-			},
-			url: _p1._0.url,
-			body: _elm_lang$http$Http$jsonBody(
-				_user$project$Qna$encodeQuestion(model.topic)),
-			expect: _elm_lang$http$Http$expectJson(_user$project$Qna$decodeResponse),
-			timeout: _elm_lang$core$Maybe$Nothing,
-			withCredentials: false
-		};
-		var request = _elm_lang$http$Http$request(settings);
+		var settings_ = _elm_lang$core$Native_Utils.update(
+			_user$project$Qna$postSettings,
+			{
+				url: _p1._0.url,
+				body: _elm_lang$http$Http$jsonBody(
+					_user$project$Qna$encodeQuestion(model.topic)),
+				expect: _elm_lang$http$Http$expectJson(_user$project$Qna$decodeResponse)
+			});
+		var request = _elm_lang$http$Http$request(settings_);
 		return A2(_elm_lang$http$Http$send, _user$project$Qna$NewResponse, request);
 	}
 };
