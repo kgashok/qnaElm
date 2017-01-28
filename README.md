@@ -12,5 +12,7 @@ And also connecting to Microsoft's cognitive services for Q&A.
 
 For a demo, click [this](https://preview.c9users.io/kgashok/qnamicro/index.html?_c9_id=livepreview1&_c9_host=https://ide.c9.io).
 
+## Important Reading 
 
+JSON parsing is a minefield https://news.ycombinator.com/item?id=12796556
 

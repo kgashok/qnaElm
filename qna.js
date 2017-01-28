@@ -11184,15 +11184,31 @@ var _user$project$Qna$viewAnswer = function (answer) {
 					_elm_lang$html$Html$span,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('answer'),
+						_0: _elm_lang$html$Html_Attributes$class('score'),
 						_1: {ctor: '[]'}
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(answer.text),
+						_0: _elm_lang$html$Html$text(
+							A2(_elm_lang$core$Basics_ops['++'], answer.confidence, '  ')),
 						_1: {ctor: '[]'}
 					}),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$span,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('answer'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(answer.text),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
 			}
 		});
 };
@@ -11248,9 +11264,9 @@ var _user$project$Qna$kBase = {
 		}
 	}
 };
-var _user$project$Qna$Answer = F2(
-	function (a, b) {
-		return {kBase: a, text: b};
+var _user$project$Qna$Answer = F3(
+	function (a, b, c) {
+		return {kBase: a, text: b, confidence: c};
 	});
 var _user$project$Qna$initialModel = A4(
 	_user$project$Qna$Model,
@@ -11259,11 +11275,11 @@ var _user$project$Qna$initialModel = A4(
 	_user$project$Qna$kBase,
 	{
 		ctor: '::',
-		_0: A2(_user$project$Qna$Answer, 'Unknown', 'algorithms are eating the world!'),
+		_0: A3(_user$project$Qna$Answer, 'Unknown', 'algorithms are eating the world!', '0.0'),
 		_1: {ctor: '[]'}
 	});
-var _user$project$Qna$addResponse = F2(
-	function (model, response) {
+var _user$project$Qna$addResponse = F3(
+	function (model, response, score) {
 		var _p0 = model.knowledgeBase;
 		if (_p0.ctor === '[]') {
 			return model;
@@ -11273,16 +11289,29 @@ var _user$project$Qna$addResponse = F2(
 				{
 					answer: {
 						ctor: '::',
-						_0: A2(
+						_0: A3(
 							_user$project$Qna$Answer,
 							_p0._0.name,
-							_marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape(response)),
+							_marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape(response),
+							score),
 						_1: model.answer
 					},
 					knowledgeBase: _p0._1
 				});
 		}
 	});
+var _user$project$Qna$Response = F2(
+	function (a, b) {
+		return {answer: a, score: b};
+	});
+var _user$project$Qna$decodeResponse = A3(
+	_elm_lang$core$Json_Decode$map2,
+	_user$project$Qna$Response,
+	A2(_elm_lang$core$Json_Decode$field, 'answer', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'score', _elm_lang$core$Json_Decode$string));
+var _user$project$Qna$NewResponse = function (a) {
+	return {ctor: 'NewResponse', _0: a};
+};
 var _user$project$Qna$NewAnswer = function (a) {
 	return {ctor: 'NewAnswer', _0: a};
 };
@@ -11316,12 +11345,12 @@ var _user$project$Qna$getAnswer = function (model) {
 			url: _p1._0.url,
 			body: _elm_lang$http$Http$jsonBody(
 				_user$project$Qna$encodeQuestion(model.topic)),
-			expect: _elm_lang$http$Http$expectJson(_user$project$Qna$decodeAnswer),
+			expect: _elm_lang$http$Http$expectJson(_user$project$Qna$decodeResponse),
 			timeout: _elm_lang$core$Maybe$Nothing,
 			withCredentials: false
 		};
 		var request = _elm_lang$http$Http$request(settings);
-		return A2(_elm_lang$http$Http$send, _user$project$Qna$NewAnswer, request);
+		return A2(_elm_lang$http$Http$send, _user$project$Qna$NewResponse, request);
 	}
 };
 var _user$project$Qna$init = {
@@ -11359,17 +11388,39 @@ var _user$project$Qna$update = F2(
 				}
 			case 'NewAnswer':
 				if (_p2._0.ctor === 'Ok') {
-					var model_ = A2(_user$project$Qna$addResponse, model, _p2._0._0);
+					var model_ = A3(_user$project$Qna$addResponse, model, _p2._0._0, '0.0');
 					return {
 						ctor: '_Tuple2',
 						_0: model_,
 						_1: _user$project$Qna$getAnswer(model_)
 					};
 				} else {
-					var model_ = A2(
+					var model_ = A3(
 						_user$project$Qna$addResponse,
 						model,
-						_elm_lang$core$Basics$toString(_p2._0._0));
+						_elm_lang$core$Basics$toString(_p2._0._0),
+						'0.0');
+					return {
+						ctor: '_Tuple2',
+						_0: model_,
+						_1: _user$project$Qna$getAnswer(model_)
+					};
+				}
+			case 'NewResponse':
+				if (_p2._0.ctor === 'Ok') {
+					var _p3 = _p2._0._0;
+					var model_ = A3(_user$project$Qna$addResponse, model, _p3.answer, _p3.score);
+					return {
+						ctor: '_Tuple2',
+						_0: model_,
+						_1: _user$project$Qna$getAnswer(model_)
+					};
+				} else {
+					var model_ = A3(
+						_user$project$Qna$addResponse,
+						model,
+						_elm_lang$core$Basics$toString(_p2._0._0),
+						'0.0');
 					return {
 						ctor: '_Tuple2',
 						_0: model_,

@@ -60,12 +60,12 @@ type alias QnAService =
 type alias Answer = 
   { kBase : String 
   , text  : String
-  , confidence : Float
+  , confidence : String
   }
 
 type alias Response =
   { answer : String 
-  , score : Float
+  , score : String
   }
 
 kBase : List QnAService
@@ -80,7 +80,7 @@ initialModel =
   Model "what are algorithms?" 
     "img/barrelOfMonkeys.gif" 
     kBase 
-    [Answer "Unknown" "algorithms are eating the world!" 0.0]
+    [Answer "Unknown" "algorithms are eating the world!" "0.0"]
 
 init : (Model, Cmd Msg)
 init  =
@@ -119,24 +119,24 @@ update msg model =
 
     NewAnswer (Ok answer) ->
       let 
-        model_ = addResponse model answer 
+        model_ = addResponse model answer "0.0"
       in 
         ( model_, getAnswer model_)
 
     NewAnswer (Err error) ->
       let 
-        model_ = addResponse model (toString error) 
+        model_ = addResponse model (toString error) "0.0" 
       in 
         ( model_, getAnswer model_)
 
     NewResponse (Ok response) -> 
       let 
-        model_ = addResponse model (toString response) 
+        model_ = addResponse model response.answer response.score 
       in 
         ( model_, getAnswer model_)
     NewResponse (Err error) -> 
         let 
-          model_ = addResponse model (toString error) 
+          model_ = addResponse model (toString error) "0.0"
         in 
           ( model_, getAnswer model_) 
 
@@ -144,15 +144,15 @@ update msg model =
     Topic s -> 
       ( {model |topic = s}, Cmd.none)
 
-addResponse : Model -> String -> Model 
-addResponse model response =
+addResponse : Model -> String -> String -> Model 
+addResponse model response score =
   case model.knowledgeBase of 
     [] -> 
       model 
     
     kHead :: kTail -> 
       { model | answer = 
-          (Answer kHead.name (unescape response) 0.0) :: model.answer, 
+          (Answer kHead.name (unescape response) score) :: model.answer, 
           knowledgeBase = kTail } 
 
 -- VIEW
@@ -185,6 +185,7 @@ viewAnswer: Answer -> Html Msg
 viewAnswer answer = 
   li []
     [ span [class "kBase" ] [text (answer.kBase ++ "  ")]
+    , span [class "score" ] [text (answer.confidence ++ "  ")]
     , span [class "answer"] [text answer.text]
     ]
  
@@ -230,14 +231,14 @@ getAnswer model =
           , url     = kHead.url
           -- , body = emptyBody
           , body    = jsonBody (encodeQuestion model.topic) 
-          , expect  = expectJson decodeAnswer
+          , expect  = expectJson decodeResponse
           , timeout = Nothing
           , withCredentials = False
           }
         request =
           Http.request settings 
       in
-        Http.send NewAnswer request
+        Http.send NewResponse request
 
 
 encodeQuestion : String -> Encode.Value        
@@ -249,7 +250,7 @@ decodeResponse : Decode.Decoder Response
 decodeResponse = 
   Decode.map2 Response 
     (field "answer" Decode.string)
-    (field "score" Decode.float)
+    (field "score" Decode.string)
 
 decodeAnswer : Decode.Decoder String
 decodeAnswer =
