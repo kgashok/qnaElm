@@ -1,10 +1,10 @@
 module Qna exposing (..) 
-
+  
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http exposing (..) 
-import Json.Decode as Decode
+import Json.Decode as Decode exposing (Decoder, field, succeed)
 import Json.Encode as Encode
 import Version exposing (version, gitRepo)
 
@@ -60,6 +60,12 @@ type alias QnAService =
 type alias Answer = 
   { kBase : String 
   , text  : String
+  , confidence : Float
+  }
+
+type alias Response =
+  { answer : String 
+  , score : Float
   }
 
 kBase : List QnAService
@@ -74,7 +80,7 @@ initialModel =
   Model "what are algorithms?" 
     "img/barrelOfMonkeys.gif" 
     kBase 
-    [Answer "Unknown" "algorithms are eating the world!"]
+    [Answer "Unknown" "algorithms are eating the world!" 0.0]
 
 init : (Model, Cmd Msg)
 init  =
@@ -91,6 +97,7 @@ type Msg
   | NewGif (Result Http.Error String)
   | Topic String
   | NewAnswer (Result Http.Error String)
+  | NewResponse (Result Http.Error Response)
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -122,6 +129,18 @@ update msg model =
       in 
         ( model_, getAnswer model_)
 
+    NewResponse (Ok response) -> 
+      let 
+        model_ = addResponse model (toString response) 
+      in 
+        ( model_, getAnswer model_)
+    NewResponse (Err error) -> 
+        let 
+          model_ = addResponse model (toString error) 
+        in 
+          ( model_, getAnswer model_) 
+
+
     Topic s -> 
       ( {model |topic = s}, Cmd.none)
 
@@ -133,7 +152,7 @@ addResponse model response =
     
     kHead :: kTail -> 
       { model | answer = 
-          (Answer kHead.name (unescape response)) :: model.answer, 
+          (Answer kHead.name (unescape response) 0.0) :: model.answer, 
           knowledgeBase = kTail } 
 
 -- VIEW
@@ -185,6 +204,13 @@ subscriptions model =
 
 -- HTTP -- 
 
+{--getReponse : Cmd Msg 
+getReponse = 
+  (Decode.string responseDecoder)
+    |> Http.request settings
+    |> Http.send NewResponse 
+--}
+
 getAnswer : Model -> Cmd Msg
 getAnswer model =
   case model.knowledgeBase of 
@@ -218,6 +244,12 @@ encodeQuestion : String -> Encode.Value
 encodeQuestion question =
   Encode.object 
     [ ("question", Encode.string question)]
+
+decodeResponse : Decode.Decoder Response 
+decodeResponse = 
+  Decode.map2 Response 
+    (field "answer" Decode.string)
+    (field "score" Decode.float)
 
 decodeAnswer : Decode.Decoder String
 decodeAnswer =
