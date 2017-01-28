@@ -45,6 +45,9 @@ builder kid =
 randomGifUrl : String
 randomGifUrl = "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag="
 
+subscriptionKey : String 
+subscriptionKey = "a6fbd18b9b2e45b59f2ce4f73a56e1e4"
+
 type alias Model =
   { topic : String
   , gifUrl : String
@@ -78,8 +81,7 @@ initialModel =
 
 init : (Model, Cmd Msg)
 init  =
-  ( initialModel 
-  , getAnswer initialModel 
+  ( addResponse initialModel ""
   --, (Cmd.batch [getRandomGif topic, getAnswer topic])
   )
 
@@ -101,8 +103,8 @@ update msg model =
       let 
         model_ = { model | answer   = [], 
                       knowledgeBase = kBase } 
-      in 
-        (model_, getAnswer model_)
+      in
+        addResponse model_ ""
 
     NewGif (Ok newUrl) ->
       ( { model | gifUrl = newUrl }, Cmd.none)
@@ -111,33 +113,44 @@ update msg model =
       (model, Cmd.none)
 
     NewAnswer (Ok answer) ->
-      let 
-        model_ = addResponse model answer
-      in 
-        (model_, getAnswer model_)            
+      addResponse model answer
 
     NewAnswer (Err error) ->
-      let 
-        model_ = addResponse model (toString error)
-      in 
-        (model_, getAnswer model_)
+      addResponse model (toString error)
 
     Topic s -> 
       ( {model |topic = s}, Cmd.none)
 
-addResponse : Model -> String -> Model 
+addResponse : Model -> String -> (Model, Cmd Msg) 
 addResponse model response = 
-  let 
-    kBase = model.knowledgeBase
-      |> List.map .name 
-      |> List.head 
-      |> Maybe.withDefault "NA"
-    truncatedKB = model.knowledgeBase
-      |> List.tail
-      |> Maybe.withDefault [QnAService "QED" ""]
-  in 
-    { model | answer = (Answer kBase (unescape response)) :: model.answer, 
-        knowledgeBase = truncatedKB }
+  case (model.knowledgeBase) of
+    [] ->  -- no more knowledge bases to query
+      (model, getRandomGif model.topic)
+
+    kHead :: kTail -> 
+      let 
+        model_ = { model | answer = (Answer kHead.name (unescape response)) 
+                      :: model.answer,knowledgeBase = kTail }
+        settings =
+          { method  = "POST"
+          , headers = [ Http.header "Ocp-Apim-Subscription-Key" subscriptionKey
+                      , Http.header "Cache-Control" "no-cache"
+                      -- , Http.header "Content-Type" "application/json"
+                      ]
+          , url     = kHead.url 
+          -- , body = emptyBody
+          , body    = jsonBody (encodeQuestion model.topic) 
+          , expect  = expectJson decodeAnswer
+          , timeout = Nothing
+          , withCredentials = False
+          }
+        request = Http.request settings 
+      in
+        case response of 
+          "" -> 
+            (model, Http.send NewAnswer request)
+          _ -> 
+            (model_, Http.send NewAnswer request)
 
 -- VIEW
 
@@ -187,33 +200,6 @@ subscriptions model =
   Sub.none
 
 -- HTTP -- 
-
-getAnswer : Model -> Cmd Msg
-getAnswer model =
-  let
-    settings =
-      { method  = "POST"
-      , headers = [ Http.header "Ocp-Apim-Subscription-Key" "a6fbd18b9b2e45b59f2ce4f73a56e1e4"
-                  , Http.header "Cache-Control" "no-cache"
-                  -- , Http.header "Content-Type" "application/json"
-                  ]
-      , url     = List.map .url model.knowledgeBase 
-                    |> List.head |> Maybe.withDefault "QED"
-      -- , body = emptyBody
-      , body    = jsonBody (encodeQuestion model.topic) 
-      , expect  = expectJson decodeAnswer
-      , timeout = Nothing
-      , withCredentials = False
-      }
-    request =
-      Http.request settings 
-  in
-    case settings.url of 
-      "QED" -> 
-        -- Cmd.none
-        getRandomGif model.topic
-      _-> 
-        Http.send NewAnswer request
 
 encodeQuestion : String -> Encode.Value        
 encodeQuestion question =
