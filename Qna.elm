@@ -96,7 +96,6 @@ type Msg
   = MorePlease
   | NewGif (Result Http.Error String)
   | Topic String
-  | NewAnswer (Result Http.Error String)
   | NewResponse (Result Http.Error Response)
 
 
@@ -116,18 +115,6 @@ update msg model =
 
     NewGif (Err _) ->
       ( model, Cmd.none)
-
-    NewAnswer (Ok answer) ->
-      let 
-        model_ = addResponse model answer "0.0"
-      in 
-        ( model_, getAnswer model_)
-
-    NewAnswer (Err error) ->
-      let 
-        model_ = addResponse model (toString error) "0.0" 
-      in 
-        ( model_, getAnswer model_)
 
     NewResponse (Ok response) -> 
       let 
@@ -170,7 +157,7 @@ view model =
     --, br [] []
     , viewAllAnswers model 
     --, br [] []
-    , img [src model.gifUrl] []
+    , img [src model.gifUrl, alt "gif related to topic"] []
     ]
 
 viewAllAnswers: Model -> Html Msg 
@@ -205,13 +192,6 @@ subscriptions model =
 
 -- HTTP -- 
 
-{--getReponse : Cmd Msg 
-getReponse = 
-  (Decode.string responseDecoder)
-    |> Http.request settings
-    |> Http.send NewResponse 
---}
-
 getAnswer : Model -> Cmd Msg
 getAnswer model =
   case model.knowledgeBase of 
@@ -224,10 +204,10 @@ getAnswer model =
         settings =
           { method  = "POST"
           , headers = 
-              [ Http.header "Ocp-Apim-Subscription-Key" qnamakerSubscriptionKey
-              , Http.header "Cache-Control" "no-cache"
-              -- , Http.header "Content-Type" "application/json"
-              ]
+            [ Http.header "Ocp-Apim-Subscription-Key" qnamakerSubscriptionKey
+            , Http.header "Cache-Control" "no-cache"
+            -- , Http.header "Content-Type" "application/json"
+            ]
           , url     = kHead.url
           -- , body = emptyBody
           , body    = jsonBody (encodeQuestion model.topic) 
@@ -250,7 +230,7 @@ decodeResponse : Decode.Decoder Response
 decodeResponse = 
   Decode.map2 Response 
     (field "answer" Decode.string)
-    (field "score" Decode.string)
+    (field "score" Decode.string) -- this should be Float?
 
 decodeAnswer : Decode.Decoder String
 decodeAnswer =
@@ -267,3 +247,10 @@ getRandomGif topic =
 decodeGifUrl : Decode.Decoder String
 decodeGifUrl =
   Decode.at ["data", "image_url"] Decode.string
+
+{--getReponse : Cmd Msg 
+getReponse = 
+  (Decode.string responseDecoder)
+    |> Http.request settings
+    |> Http.send NewResponse 
+--}

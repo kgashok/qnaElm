@@ -11271,7 +11271,7 @@ var _user$project$Qna$Answer = F3(
 var _user$project$Qna$initialModel = A4(
 	_user$project$Qna$Model,
 	'what are algorithms?',
-	'img/barrelOfMonkeys.gif',
+	'img/searchComparison.gif',
 	_user$project$Qna$kBase,
 	{
 		ctor: '::',
@@ -11311,9 +11311,6 @@ var _user$project$Qna$decodeResponse = A3(
 	A2(_elm_lang$core$Json_Decode$field, 'score', _elm_lang$core$Json_Decode$string));
 var _user$project$Qna$NewResponse = function (a) {
 	return {ctor: 'NewResponse', _0: a};
-};
-var _user$project$Qna$NewAnswer = function (a) {
-	return {ctor: 'NewAnswer', _0: a};
 };
 var _user$project$Qna$Topic = function (a) {
 	return {ctor: 'Topic', _0: a};
@@ -11385,26 +11382,6 @@ var _user$project$Qna$update = F2(
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			case 'NewAnswer':
-				if (_p2._0.ctor === 'Ok') {
-					var model_ = A3(_user$project$Qna$addResponse, model, _p2._0._0, '0.0');
-					return {
-						ctor: '_Tuple2',
-						_0: model_,
-						_1: _user$project$Qna$getAnswer(model_)
-					};
-				} else {
-					var model_ = A3(
-						_user$project$Qna$addResponse,
-						model,
-						_elm_lang$core$Basics$toString(_p2._0._0),
-						'0.0');
-					return {
-						ctor: '_Tuple2',
-						_0: model_,
-						_1: _user$project$Qna$getAnswer(model_)
-					};
 				}
 			case 'NewResponse':
 				if (_p2._0.ctor === 'Ok') {
@@ -11521,7 +11498,11 @@ var _user$project$Qna$view = function (model) {
 											{
 												ctor: '::',
 												_0: _elm_lang$html$Html_Attributes$src(model.gifUrl),
-												_1: {ctor: '[]'}
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$alt('gif related to topic'),
+													_1: {ctor: '[]'}
+												}
 											},
 											{ctor: '[]'}),
 										_1: {ctor: '[]'}
