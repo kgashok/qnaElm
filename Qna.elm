@@ -23,6 +23,12 @@ main =
 
 -- MODEL
 
+qnamakerUriBase: String 
+qnamakerUriBase = "https://westus.api.cognitive.microsoft.com/qnamaker/v1.0"
+
+qnamakerSubscriptionKey: String 
+qnamakerSubscriptionKey = "a6fbd18b9b2e45b59f2ce4f73a56e1e4"
+ 
 knowledgebaseId : String 
 knowledgebaseId = "b693c8be-313c-434d-b3a7-dad2d4656039"
 
@@ -32,18 +38,9 @@ knowledgebaseId2 = "8c59a93f-1622-4ce3-b848-dcc56f10f2b0"
 knowledgebaseId3 : String 
 knowledgebaseId3 = "ed3f0ded-b71e-43ff-93c6-a34454702b64"
 
-qnamakerSubscriptionKey: String 
-qnamakerSubscriptionKey = "a6fbd18b9b2e45b59f2ce4f73a56e1e4"
- 
-qnamakerUriBase: String 
-qnamakerUriBase = "https://westus.api.cognitive.microsoft.com/qnamaker/v1.0"
-
 builder : String -> String 
 builder kid = 
   qnamakerUriBase ++ "/knowledgebases/" ++ kid ++ "/generateAnswer"
-
-subscriptionKey : String 
-subscriptionKey = "a6fbd18b9b2e45b59f2ce4f73a56e1e4"
 
 randomGifUrl : String
 randomGifUrl = "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag="
@@ -199,10 +196,11 @@ getAnswer model =
       let
         settings =
           { method  = "POST"
-          , headers = [ Http.header "Ocp-Apim-Subscription-Key" subscriptionKey
-                      , Http.header "Cache-Control" "no-cache"
-                      -- , Http.header "Content-Type" "application/json"
-                      ]
+          , headers = 
+              [ Http.header "Ocp-Apim-Subscription-Key" qnamakerSubscriptionKey
+              , Http.header "Cache-Control" "no-cache"
+              -- , Http.header "Content-Type" "application/json"
+              ]
           , url     = kHead.url
           -- , body = emptyBody
           , body    = jsonBody (encodeQuestion model.topic) 
