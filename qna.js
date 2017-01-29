@@ -11190,7 +11190,7 @@ var _user$project$Qna$viewAnswer = function (answer) {
 					{
 						ctor: '::',
 						_0: _elm_lang$html$Html$text(
-							A2(_elm_lang$core$Basics_ops['++'], answer.confidence, '  ')),
+							_elm_lang$core$Basics$toString(answer.confidence)),
 						_1: {ctor: '[]'}
 					}),
 				_1: {
@@ -11275,29 +11275,50 @@ var _user$project$Qna$initialModel = A4(
 	_user$project$Qna$kBase,
 	{
 		ctor: '::',
-		_0: A3(_user$project$Qna$Answer, 'Unknown', 'algorithms are eating the world!', '0.0'),
+		_0: A3(_user$project$Qna$Answer, 'Unknown', 'algorithms are eating the world!', 0.0),
 		_1: {ctor: '[]'}
 	});
 var _user$project$Qna$addResponse = F3(
 	function (model, response, score) {
+		var confidence = _elm_lang$core$String$toFloat(score);
 		var _p0 = model.knowledgeBase;
 		if (_p0.ctor === '[]') {
 			return model;
 		} else {
-			return _elm_lang$core$Native_Utils.update(
-				model,
-				{
-					answer: {
-						ctor: '::',
-						_0: A3(
-							_user$project$Qna$Answer,
-							_p0._0.name,
-							_marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape(response),
-							score),
-						_1: model.answer
-					},
-					knowledgeBase: _p0._1
-				});
+			var _p3 = _p0._1;
+			var _p2 = _p0._0;
+			var _p1 = confidence;
+			if (_p1.ctor === 'Ok') {
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						answer: {
+							ctor: '::',
+							_0: A3(
+								_user$project$Qna$Answer,
+								_p2.name,
+								_marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape(response),
+								_p1._0),
+							_1: model.answer
+						},
+						knowledgeBase: _p3
+					});
+			} else {
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						answer: {
+							ctor: '::',
+							_0: A3(
+								_user$project$Qna$Answer,
+								_p2.name,
+								_marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape(response),
+								0.0),
+							_1: model.answer
+						},
+						knowledgeBase: _p3
+					});
+			}
 		}
 	});
 var _user$project$Qna$Response = F2(
@@ -11324,8 +11345,8 @@ var _user$project$Qna$getRandomGif = function (topic) {
 	return A2(_elm_lang$http$Http$send, _user$project$Qna$NewGif, request);
 };
 var _user$project$Qna$getAnswer = function (model) {
-	var _p1 = model.knowledgeBase;
-	if (_p1.ctor === '[]') {
+	var _p4 = model.knowledgeBase;
+	if (_p4.ctor === '[]') {
 		return _user$project$Qna$getRandomGif(model.topic);
 	} else {
 		var settings = {
@@ -11339,7 +11360,7 @@ var _user$project$Qna$getAnswer = function (model) {
 					_1: {ctor: '[]'}
 				}
 			},
-			url: _p1._0.url,
+			url: _p4._0.url,
 			body: _elm_lang$http$Http$jsonBody(
 				_user$project$Qna$encodeQuestion(model.topic)),
 			expect: _elm_lang$http$Http$expectJson(_user$project$Qna$decodeResponse),
@@ -11357,8 +11378,8 @@ var _user$project$Qna$init = {
 };
 var _user$project$Qna$update = F2(
 	function (msg, model) {
-		var _p2 = msg;
-		switch (_p2.ctor) {
+		var _p5 = msg;
+		switch (_p5.ctor) {
 			case 'MorePlease':
 				var model_ = _elm_lang$core$Native_Utils.update(
 					model,
@@ -11372,21 +11393,21 @@ var _user$project$Qna$update = F2(
 					_1: _user$project$Qna$getAnswer(model_)
 				};
 			case 'NewGif':
-				if (_p2._0.ctor === 'Ok') {
+				if (_p5._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{gifUrl: _p2._0._0}),
+							{gifUrl: _p5._0._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'NewResponse':
-				if (_p2._0.ctor === 'Ok') {
-					var _p3 = _p2._0._0;
-					var model_ = A3(_user$project$Qna$addResponse, model, _p3.answer, _p3.score);
+				if (_p5._0.ctor === 'Ok') {
+					var _p6 = _p5._0._0;
+					var model_ = A3(_user$project$Qna$addResponse, model, _p6.answer, _p6.score);
 					return {
 						ctor: '_Tuple2',
 						_0: model_,
@@ -11396,7 +11417,7 @@ var _user$project$Qna$update = F2(
 					var model_ = A3(
 						_user$project$Qna$addResponse,
 						model,
-						_elm_lang$core$Basics$toString(_p2._0._0),
+						_elm_lang$core$Basics$toString(_p5._0._0),
 						'0.0');
 					return {
 						ctor: '_Tuple2',
@@ -11409,7 +11430,7 @@ var _user$project$Qna$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{topic: _p2._0}),
+						{topic: _p5._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 		}
