@@ -65,7 +65,7 @@ type alias Answer =
 
 type alias Response =
   { answer : String 
-  , score : String
+  , score : Float
   }
 
 kBase : List QnAService
@@ -123,32 +123,23 @@ update msg model =
         ( model_, getAnswer model_ )
     NewResponse (Err error) -> 
         let 
-          model_ = addResponse model (toString error) "0.0"
+          model_ = addResponse model (toString error) 0.0
         in 
           ( model_, getAnswer model_ ) 
 
     Topic s -> 
       ( {model |topic = s}, Cmd.none)
 
-addResponse : Model -> String -> String -> Model 
+addResponse : Model -> String -> Float -> Model 
 addResponse model response score =
-  let 
-    confidence = String.toFloat score 
-  in 
-    case model.knowledgeBase of 
-      [] -> 
-        model 
-      
-      kHead :: kTail -> 
-        case confidence of 
-          (Ok val) -> 
-            { model | answer = 
-              (Answer kHead.name (unescape response) val) :: model.answer, 
-                knowledgeBase = kTail } 
-          (Err err) ->
-            { model | answer = 
-              (Answer kHead.name (unescape response) 0.0) :: model.answer, 
-                knowledgeBase = kTail } 
+  case model.knowledgeBase of 
+    [] -> 
+      model 
+    
+    kHead :: kTail -> 
+      { model | answer = 
+        (Answer kHead.name (unescape response) score) :: model.answer, 
+          knowledgeBase = kTail } 
 
 -- VIEW
 
@@ -245,7 +236,13 @@ decodeResponse : Decode.Decoder Response
 decodeResponse = 
   Decode.map2 Response 
     (field "answer" Decode.string)
-    (field "score" Decode.string) -- this should be Float?
+    (field "score" 
+      Decode.string |> Decode.andThen 
+        (\s -> case String.toFloat s  of 
+          Ok v -> Decode.succeed v 
+          Err e -> Decode.fail e)
+    )
+
 
 decodeAnswer : Decode.Decoder String
 decodeAnswer =
@@ -277,6 +274,13 @@ postSettings =
   , timeout = Nothing
   , withCredentials = False
   }
+
+{--decodeResponse : Decode.Decoder Response 
+decodeResponse = 
+  Decode.map2 Response 
+    (field "answer" Decode.string)
+    (field "score" Decode.string) -- this should be Float?
+--}
 
 {--
   postSettings: { body : Body
