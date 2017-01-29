@@ -60,7 +60,7 @@ type alias QnAService =
 type alias Answer = 
   { kBase : String 
   , text  : String
-  , confidence : String
+  , confidence : Float
   }
 
 type alias Response =
@@ -80,7 +80,7 @@ initialModel =
   Model "what are algorithms?" 
     "img/searchComparison.gif" 
     kBase 
-    [Answer "Unknown" "algorithms are eating the world!" "0.0"]
+    [Answer "Unknown" "algorithms are eating the world!" 0.0]
 
 init : (Model, Cmd Msg)
 init  =
@@ -120,26 +120,35 @@ update msg model =
       let 
         model_ = addResponse model response.answer response.score 
       in 
-        ( model_, getAnswer model_)
+        ( model_, getAnswer model_ )
     NewResponse (Err error) -> 
         let 
           model_ = addResponse model (toString error) "0.0"
         in 
-          ( model_, getAnswer model_) 
+          ( model_, getAnswer model_ ) 
 
     Topic s -> 
       ( {model |topic = s}, Cmd.none)
 
 addResponse : Model -> String -> String -> Model 
 addResponse model response score =
-  case model.knowledgeBase of 
-    [] -> 
-      model 
-    
-    kHead :: kTail -> 
-      { model | answer = 
-          (Answer kHead.name (unescape response) score) :: model.answer, 
-          knowledgeBase = kTail } 
+  let 
+    confidence = String.toFloat score 
+  in 
+    case model.knowledgeBase of 
+      [] -> 
+        model 
+      
+      kHead :: kTail -> 
+        case confidence of 
+          (Ok val) -> 
+            { model | answer = 
+              (Answer kHead.name (unescape response) val) :: model.answer, 
+                knowledgeBase = kTail } 
+          (Err err) ->
+            { model | answer = 
+              (Answer kHead.name (unescape response) 0.0) :: model.answer, 
+                knowledgeBase = kTail } 
 
 -- VIEW
 
@@ -162,16 +171,32 @@ view model =
 viewAllAnswers: Model -> Html Msg 
 viewAllAnswers model =
   let 
-    listOfAnswers = 
-      List.map viewAnswer model.answer
+    listOfAnswers = model.answer 
+      |> List.sortWith (descending .confidence)
+      --|> List.sortBy .confidence 
+      --|> List.reverse
+      |> List.map viewAnswer 
   in 
     ul [] listOfAnswers  
 
+
+descending : (a -> comparable) -> (a -> a -> Order)
+descending toComparable x y =
+  let
+    flippedComparison a b =
+      case compare a b of
+        LT -> GT
+        EQ -> EQ
+        GT -> LT
+  in
+    flippedComparison (toComparable x) (toComparable y)
+    
+    
 viewAnswer: Answer -> Html Msg 
 viewAnswer answer = 
   li []
     [ span [class "kBase" ] [text (answer.kBase ++ "  ")]
-    , span [class "score" ] [text (answer.confidence ++ "  ")]
+    , span [class "score" ] [text (toString answer.confidence)]
     , span [class "answer"] [text answer.text]
     ]
  
@@ -270,3 +295,4 @@ getReponse =
     |> Http.request settings
     |> Http.send NewResponse 
 --}
+
