@@ -11213,7 +11213,16 @@ var _user$project$Qna$viewAnswer = function (answer) {
 		});
 };
 var _user$project$Qna$viewAllAnswers = function (model) {
-	var listOfAnswers = A2(_elm_lang$core$List$map, _user$project$Qna$viewAnswer, model.answer);
+	var listOfAnswers = A2(
+		_elm_lang$core$List$map,
+		_user$project$Qna$viewAnswer,
+		_elm_lang$core$List$reverse(
+			A2(
+				_elm_lang$core$List$sortBy,
+				function (_) {
+					return _.confidence;
+				},
+				model.answer)));
 	return A2(
 		_elm_lang$html$Html$ul,
 		{ctor: '[]'},

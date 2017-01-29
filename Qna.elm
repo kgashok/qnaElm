@@ -172,8 +172,10 @@ view model =
 viewAllAnswers: Model -> Html Msg 
 viewAllAnswers model =
   let 
-    listOfAnswers = 
-      List.map viewAnswer model.answer
+    listOfAnswers = model.answer 
+      |> List.sortBy .confidence 
+      |> List.reverse
+      |> List.map viewAnswer 
   in 
     ul [] listOfAnswers  
 
