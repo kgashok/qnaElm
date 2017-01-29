@@ -172,12 +172,26 @@ viewAllAnswers: Model -> Html Msg
 viewAllAnswers model =
   let 
     listOfAnswers = model.answer 
-      |> List.sortBy .confidence 
-      |> List.reverse
+      |> List.sortWith (descending .confidence)
+      --|> List.sortBy .confidence 
+      --|> List.reverse
       |> List.map viewAnswer 
   in 
     ul [] listOfAnswers  
 
+
+descending : (a -> comparable) -> (a -> a -> Order)
+descending toComparable x y =
+  let
+    flippedComparison a b =
+      case compare a b of
+        LT -> GT
+        EQ -> EQ
+        GT -> LT
+  in
+    flippedComparison (toComparable x) (toComparable y)
+    
+    
 viewAnswer: Answer -> Html Msg 
 viewAnswer answer = 
   li []
@@ -281,3 +295,4 @@ getReponse =
     |> Http.request settings
     |> Http.send NewResponse 
 --}
+
