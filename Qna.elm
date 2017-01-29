@@ -179,7 +179,8 @@ viewAllAnswers model =
   in 
     ul [] listOfAnswers  
 
-
+-- generalized descending comparable 
+-- can be used with any field of a record
 descending : (a -> comparable) -> (a -> a -> Order)
 descending toComparable x y =
   let
