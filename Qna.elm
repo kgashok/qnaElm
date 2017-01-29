@@ -232,17 +232,26 @@ encodeQuestion question =
   Encode.object 
     [ ("question", Encode.string question)]
 
-decodeResponse : Decode.Decoder Response 
-decodeResponse = 
-  Decode.map2 Response 
+decodeResponse : Decode.Decoder Response
+decodeResponse =
+  Decode.map2 Response
     (field "answer" Decode.string)
-    (field "score" 
-      Decode.string |> Decode.andThen 
-        (\s -> case String.toFloat s  of 
-          Ok v -> Decode.succeed v 
-          Err e -> Decode.fail e)
+    (field "score"
+      Decode.string
+        |> Decode.andThen
+          (\s ->
+            case String.toFloat s of
+              Ok v ->
+                Decode.succeed v
+  
+              Err e ->
+                Decode.fail e
+          )
     )
 
+-- Alternative terse version
+-- Decode.string 
+--   |> Decode.andThen (String.toFloat >> Result.unpack Decode.fail Decode.succeed)
 
 decodeAnswer : Decode.Decoder String
 decodeAnswer =
