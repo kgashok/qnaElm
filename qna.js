@@ -11090,7 +11090,7 @@ var _marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape = _marcosh$elm_html_to_u
 var _marcosh$elm_html_to_unicode$ElmEscapeHtml$escape = _marcosh$elm_html_to_unicode$ElmEscapeHtml$convert(_marcosh$elm_html_to_unicode$ElmEscapeHtml$escapeChars);
 
 var _user$project$Version$gitRepo = 'https://github.com/kgashok/qnaElm';
-var _user$project$Version$version = 'v1.5-11-g8fac56d';
+var _user$project$Version$version = 'v1.5-12-g9f85103';
 
 var _user$project$Qna$decodeGifUrl = A2(
 	_elm_lang$core$Json_Decode$at,
@@ -11212,17 +11212,36 @@ var _user$project$Qna$viewAnswer = function (answer) {
 			}
 		});
 };
+var _user$project$Qna$descending = F3(
+	function (toComparable, x, y) {
+		var flippedComparison = F2(
+			function (a, b) {
+				var _p0 = A2(_elm_lang$core$Basics$compare, a, b);
+				switch (_p0.ctor) {
+					case 'LT':
+						return _elm_lang$core$Basics$GT;
+					case 'EQ':
+						return _elm_lang$core$Basics$EQ;
+					default:
+						return _elm_lang$core$Basics$LT;
+				}
+			});
+		return A2(
+			flippedComparison,
+			toComparable(x),
+			toComparable(y));
+	});
 var _user$project$Qna$viewAllAnswers = function (model) {
 	var listOfAnswers = A2(
 		_elm_lang$core$List$map,
 		_user$project$Qna$viewAnswer,
-		_elm_lang$core$List$reverse(
-			A2(
-				_elm_lang$core$List$sortBy,
+		A2(
+			_elm_lang$core$List$sortWith,
+			_user$project$Qna$descending(
 				function (_) {
 					return _.confidence;
-				},
-				model.answer)));
+				}),
+			model.answer));
 	return A2(
 		_elm_lang$html$Html$ul,
 		{ctor: '[]'},
@@ -11290,14 +11309,14 @@ var _user$project$Qna$initialModel = A4(
 var _user$project$Qna$addResponse = F3(
 	function (model, response, score) {
 		var confidence = _elm_lang$core$String$toFloat(score);
-		var _p0 = model.knowledgeBase;
-		if (_p0.ctor === '[]') {
+		var _p1 = model.knowledgeBase;
+		if (_p1.ctor === '[]') {
 			return model;
 		} else {
-			var _p3 = _p0._1;
-			var _p2 = _p0._0;
-			var _p1 = confidence;
-			if (_p1.ctor === 'Ok') {
+			var _p4 = _p1._1;
+			var _p3 = _p1._0;
+			var _p2 = confidence;
+			if (_p2.ctor === 'Ok') {
 				return _elm_lang$core$Native_Utils.update(
 					model,
 					{
@@ -11305,12 +11324,12 @@ var _user$project$Qna$addResponse = F3(
 							ctor: '::',
 							_0: A3(
 								_user$project$Qna$Answer,
-								_p2.name,
+								_p3.name,
 								_marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape(response),
-								_p1._0),
+								_p2._0),
 							_1: model.answer
 						},
-						knowledgeBase: _p3
+						knowledgeBase: _p4
 					});
 			} else {
 				return _elm_lang$core$Native_Utils.update(
@@ -11320,12 +11339,12 @@ var _user$project$Qna$addResponse = F3(
 							ctor: '::',
 							_0: A3(
 								_user$project$Qna$Answer,
-								_p2.name,
+								_p3.name,
 								_marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape(response),
 								0.0),
 							_1: model.answer
 						},
-						knowledgeBase: _p3
+						knowledgeBase: _p4
 					});
 			}
 		}
@@ -11354,8 +11373,8 @@ var _user$project$Qna$getRandomGif = function (topic) {
 	return A2(_elm_lang$http$Http$send, _user$project$Qna$NewGif, request);
 };
 var _user$project$Qna$getAnswer = function (model) {
-	var _p4 = model.knowledgeBase;
-	if (_p4.ctor === '[]') {
+	var _p5 = model.knowledgeBase;
+	if (_p5.ctor === '[]') {
 		return _user$project$Qna$getRandomGif(model.topic);
 	} else {
 		var settings = {
@@ -11369,7 +11388,7 @@ var _user$project$Qna$getAnswer = function (model) {
 					_1: {ctor: '[]'}
 				}
 			},
-			url: _p4._0.url,
+			url: _p5._0.url,
 			body: _elm_lang$http$Http$jsonBody(
 				_user$project$Qna$encodeQuestion(model.topic)),
 			expect: _elm_lang$http$Http$expectJson(_user$project$Qna$decodeResponse),
@@ -11387,8 +11406,8 @@ var _user$project$Qna$init = {
 };
 var _user$project$Qna$update = F2(
 	function (msg, model) {
-		var _p5 = msg;
-		switch (_p5.ctor) {
+		var _p6 = msg;
+		switch (_p6.ctor) {
 			case 'MorePlease':
 				var model_ = _elm_lang$core$Native_Utils.update(
 					model,
@@ -11402,21 +11421,21 @@ var _user$project$Qna$update = F2(
 					_1: _user$project$Qna$getAnswer(model_)
 				};
 			case 'NewGif':
-				if (_p5._0.ctor === 'Ok') {
+				if (_p6._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{gifUrl: _p5._0._0}),
+							{gifUrl: _p6._0._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'NewResponse':
-				if (_p5._0.ctor === 'Ok') {
-					var _p6 = _p5._0._0;
-					var model_ = A3(_user$project$Qna$addResponse, model, _p6.answer, _p6.score);
+				if (_p6._0.ctor === 'Ok') {
+					var _p7 = _p6._0._0;
+					var model_ = A3(_user$project$Qna$addResponse, model, _p7.answer, _p7.score);
 					return {
 						ctor: '_Tuple2',
 						_0: model_,
@@ -11426,7 +11445,7 @@ var _user$project$Qna$update = F2(
 					var model_ = A3(
 						_user$project$Qna$addResponse,
 						model,
-						_elm_lang$core$Basics$toString(_p5._0._0),
+						_elm_lang$core$Basics$toString(_p6._0._0),
 						'0.0');
 					return {
 						ctor: '_Tuple2',
@@ -11439,7 +11458,7 @@ var _user$project$Qna$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{topic: _p5._0}),
+						{topic: _p6._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 		}
