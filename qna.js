@@ -15049,7 +15049,7 @@ var _marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape = _marcosh$elm_html_to_u
 var _marcosh$elm_html_to_unicode$ElmEscapeHtml$escape = _marcosh$elm_html_to_unicode$ElmEscapeHtml$convert(_marcosh$elm_html_to_unicode$ElmEscapeHtml$escapeChars);
 
 var _user$project$Version$gitRepo = 'https://github.com/kgashok/qnaElm';
-var _user$project$Version$version = 'v1.5-27-geb73616';
+var _user$project$Version$version = 'v1.5-28-g27dcf36';
 
 var _user$project$Qna$decodeGifUrl = A2(
 	_elm_lang$core$Json_Decode$at,
@@ -15271,8 +15271,9 @@ var _user$project$Qna$Answer = F3(
 	function (a, b, c) {
 		return {kBase: a, text: b, confidence: c};
 	});
-var _user$project$Qna$addResponse = F3(
-	function (model, response, score) {
+var _user$project$Qna$addResponse = F2(
+	function (model, response) {
+		var qna = '-- ';
 		return _elm_lang$core$Native_Utils.update(
 			model,
 			{
@@ -15280,9 +15281,9 @@ var _user$project$Qna$addResponse = F3(
 					ctor: '::',
 					_0: A3(
 						_user$project$Qna$Answer,
-						'-- ',
-						_marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape(response),
-						score),
+						qna,
+						_marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape(response.answer),
+						response.score),
 					_1: model.answer
 				}
 			});
@@ -15427,15 +15428,16 @@ var _user$project$Qna$update = F2(
 				}
 			case 'NewResponse':
 				if (_p3._0.ctor === 'Ok') {
-					var _p4 = _p3._0._0;
-					var model_ = A3(_user$project$Qna$addResponse, model, _p4.answer, _p4.score);
+					var model_ = A2(_user$project$Qna$addResponse, model, _p3._0._0);
 					return _user$project$Qna$sortAnswers(model_);
 				} else {
-					var model_ = A3(
+					var model_ = A2(
 						_user$project$Qna$addResponse,
 						model,
-						_elm_lang$core$Basics$toString(_p3._0._0),
-						0.0);
+						A2(
+							_user$project$Qna$Response,
+							_elm_lang$core$Basics$toString(_p3._0._0),
+							0.0));
 					return _user$project$Qna$sortAnswers(model_);
 				}
 			default:

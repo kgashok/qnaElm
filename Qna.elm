@@ -64,7 +64,8 @@ type alias Answer =
   }
 
 type alias Response =
-  { answer : String 
+  { --path : String 
+    answer : String 
   , score : Float
   }
 
@@ -121,13 +122,14 @@ update msg model =
         
     NewResponse (Ok response) -> 
       let 
-        model_ = addResponse model response.answer response.score 
+        -- model_ = addResponse model response.path response.answer response.score 
+        model_ = addResponse model response 
       in
         sortAnswers model_
 
     NewResponse (Err error) -> 
       let 
-        model_ = addResponse model (toString error) 0.0
+        model_ = addResponse model (Response(toString error) 0.0)
       in 
         sortAnswers model_
 
@@ -144,11 +146,22 @@ sortAnswers model =
   else 
     ( model, Cmd.none )
 
+{--
+for your case, since it’s always the 3rd element
+
+`List.head << List.drop 3 << String.split "/"`
+
+This should give you `String -> Maybe String`
+
+--}
   
-addResponse : Model -> String -> Float -> Model 
-addResponse model response score =
-  { model | answer = 
-    (Answer "-- " (unescape response) score) :: model.answer }
+addResponse : Model -> Response -> Model 
+addResponse model response =
+  let 
+    qna = "-- " -- getName response.path 
+  in 
+    { model | answer = 
+      (Answer qna (unescape response.answer) response.score) :: model.answer }
           
           
 -- VIEW
@@ -260,6 +273,7 @@ encodeQuestion question =
 decodeResponse : Decode.Decoder Response
 decodeResponse =
   Decode.map2 Response
+    -- (field "headers" Decode.string) 
     (field "answer" Decode.string)
     (field "score"
       Decode.string
