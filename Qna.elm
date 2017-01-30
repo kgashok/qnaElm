@@ -148,7 +148,7 @@ sortAnswers model =
 addResponse : Model -> String -> Float -> Model 
 addResponse model response score =
   { model | answer = 
-    (Answer "- " (unescape response) score) :: model.answer }
+    (Answer "-- " (unescape response) score) :: model.answer }
           
           
 -- VIEW

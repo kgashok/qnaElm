@@ -15049,7 +15049,7 @@ var _marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape = _marcosh$elm_html_to_u
 var _marcosh$elm_html_to_unicode$ElmEscapeHtml$escape = _marcosh$elm_html_to_unicode$ElmEscapeHtml$convert(_marcosh$elm_html_to_unicode$ElmEscapeHtml$escapeChars);
 
 var _user$project$Version$gitRepo = 'https://github.com/kgashok/qnaElm';
-var _user$project$Version$version = 'v1.5-23-ga712a25';
+var _user$project$Version$version = 'v1.5-27-geb73616';
 
 var _user$project$Qna$decodeGifUrl = A2(
 	_elm_lang$core$Json_Decode$at,
@@ -15280,7 +15280,7 @@ var _user$project$Qna$addResponse = F3(
 					ctor: '::',
 					_0: A3(
 						_user$project$Qna$Answer,
-						'- ',
+						'-- ',
 						_marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape(response),
 						score),
 					_1: model.answer
