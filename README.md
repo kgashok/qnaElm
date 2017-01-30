@@ -16,3 +16,21 @@ For a demo, click [this](https://preview.c9users.io/kgashok/qnamicro/index.html?
 
 JSON parsing is a minefield https://news.ycombinator.com/item?id=12796556
 
+
+### Resolving Issue #19 
+
+The moment to do this is after you have received and 
+processed your last HTTP response. So in a branch in your `update`, 
+something like
+
+```
+case msg of
+    ReceivedHttpResponse response ->
+        let
+            newModel = processInModel response model
+        in
+            if (hasLastResponse newModel) then
+                 update SortList newModel
+            else
+                  (newModel, Cmd.none)
+```
