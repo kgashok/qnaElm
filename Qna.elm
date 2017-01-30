@@ -111,11 +111,12 @@ update msg model =
         ( model_, getAnswer model_ )
 
     NewGif (Ok newUrl) ->
-      ( { model | gifUrl = newUrl }, Cmd.none)
+      ( { model | gifUrl = newUrl 
+                , answer = sortAnswers model.answer }, Cmd.none)
 
     NewGif (Err _) ->
-      ( model, Cmd.none)
-
+      ( { model | answer = sortAnswers model.answer } , Cmd.none)
+        
     NewResponse (Ok response) -> 
       let 
         model_ = addResponse model response.answer response.score 
@@ -130,16 +131,21 @@ update msg model =
     Topic s -> 
       ( {model |topic = s}, Cmd.none)
 
+sortAnswers : List Answer -> List Answer 
+sortAnswers answers = 
+  answers |> List.sortWith (descending .confidence)
+
+  
 addResponse : Model -> String -> Float -> Model 
 addResponse model response score =
-  case model.knowledgeBase of 
-    [] -> 
-      model 
-    
-    kHead :: kTail -> 
-      { model | answer = 
-        (Answer kHead.name (unescape response) score) :: model.answer, 
-          knowledgeBase = kTail } 
+    case model.knowledgeBase of 
+      [] -> 
+        model
+      
+      kHead :: kTail -> 
+        { model | answer = 
+          (Answer kHead.name (unescape response) score) :: model.answer, 
+            knowledgeBase = kTail } 
 
 -- VIEW
 
@@ -162,11 +168,7 @@ view model =
 viewAllAnswers: Model -> Html Msg 
 viewAllAnswers model =
   let 
-    listOfAnswers = model.answer 
-      |> List.sortWith (descending .confidence)
-      --|> List.sortBy .confidence 
-      --|> List.reverse
-      |> List.map viewAnswer 
+    listOfAnswers = model.answer |> List.map viewAnswer 
   in 
     ul [] listOfAnswers  
 
