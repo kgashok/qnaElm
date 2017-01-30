@@ -108,32 +108,40 @@ update msg model =
         model_ = { model | answer   = [], 
                       knowledgeBase = kBase } 
       in
-        ( model_, getAnswer model_ )
+        ( model_, 
+            Cmd.batch [ getAnswer model_
+                      , getRandomGif model.topic] )
 
     NewGif (Ok newUrl) ->
-      ( { model | gifUrl = newUrl 
-                , answer = sortAnswers model.answer }, Cmd.none)
+      ( { model | gifUrl = newUrl }, Cmd.none)
 
     NewGif (Err _) ->
-      ( { model | answer = sortAnswers model.answer } , Cmd.none)
+      ( model , Cmd.none)
         
     NewResponse (Ok response) -> 
       let 
         model_ = addResponse model response.answer response.score 
-      in 
-        ( model_, getAnswer model_ )
+      in
+        sortAnswers model_
+
     NewResponse (Err error) -> 
-        let 
-          model_ = addResponse model (toString error) 0.0
-        in 
-          ( model_, getAnswer model_ ) 
+      let 
+        model_ = addResponse model (toString error) 0.0
+      in 
+        sortAnswers model_
 
     Topic s -> 
       ( {model |topic = s}, Cmd.none)
 
-sortAnswers : List Answer -> List Answer 
-sortAnswers answers = 
-  answers |> List.sortWith (descending .confidence)
+sortAnswers : Model -> (Model, Cmd Msg) 
+sortAnswers model = 
+  if (List.isEmpty model.knowledgeBase) then 
+    ( { model | answer = model.answer 
+          |> List.sortWith (descending .confidence) }
+      , Cmd.none 
+    ) 
+  else 
+    ( model, getAnswer model )
 
   
 addResponse : Model -> String -> Float -> Model 
@@ -214,8 +222,8 @@ getAnswer : Model -> Cmd Msg
 getAnswer model =
   case model.knowledgeBase of 
     [] -> 
-      getRandomGif model.topic 
-    
+      Cmd.none 
+
     kHead :: kTail ->       
       let
         settings_ = { postSettings | 
