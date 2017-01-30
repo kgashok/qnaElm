@@ -80,12 +80,13 @@ initialModel =
   Model "what are algorithms?" 
     "img/searchComparison.gif" 
     kBase 
-    [Answer "Unknown" "algorithms are eating the world!" 0.0]
+    --[Answer "Unknown" "algorithms are eating the world!" 0.0]
+    []
 
 init : (Model, Cmd Msg)
 init  =
   ( initialModel
-  , getAnswer initialModel
+  , getAnswer2 initialModel
   --, (Cmd.batch [getRandomGif topic, getAnswer topic])
   )
 
@@ -109,7 +110,7 @@ update msg model =
                       knowledgeBase = kBase } 
       in
         ( model_, 
-            Cmd.batch [ getAnswer model_
+            Cmd.batch [ getAnswer2 model_
                       , getRandomGif model.topic] )
 
     NewGif (Ok newUrl) ->
@@ -135,26 +136,21 @@ update msg model =
 
 sortAnswers : Model -> (Model, Cmd Msg) 
 sortAnswers model = 
-  if (List.isEmpty model.knowledgeBase) then 
+  if (List.length model.answer >= List.length model.knowledgeBase ) then 
     ( { model | answer = model.answer 
           |> List.sortWith (descending .confidence) }
       , Cmd.none 
     ) 
   else 
-    ( model, getAnswer model )
+    ( model, Cmd.none )
 
   
 addResponse : Model -> String -> Float -> Model 
 addResponse model response score =
-    case model.knowledgeBase of 
-      [] -> 
-        model
-      
-      kHead :: kTail -> 
-        { model | answer = 
-          (Answer kHead.name (unescape response) score) :: model.answer, 
-            knowledgeBase = kTail } 
-
+  { model | answer = 
+    (Answer "- " (unescape response) score) :: model.answer }
+          
+          
 -- VIEW
 
 view : Model -> Html Msg
@@ -236,6 +232,25 @@ getAnswer model =
       in
         Http.send NewResponse request
 
+
+getAnswer2 : Model -> Cmd Msg
+getAnswer2 model =
+  let
+    settings_ kurl = { postSettings | 
+      url = kurl, 
+      body = jsonBody (encodeQuestion model.topic),
+      expect  = expectJson decodeResponse }
+    --request =
+    --  Http.request settings_
+    requests = model.knowledgeBase
+      |> List.map .url 
+      |> List.map settings_
+      |> List.map Http.request 
+      |> List.map (Http.send NewResponse)
+      |> Cmd.batch
+  in
+    requests
+    --Cmd.batch <| requests
 
 encodeQuestion : String -> Encode.Value        
 encodeQuestion question =
