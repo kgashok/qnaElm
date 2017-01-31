@@ -201,6 +201,7 @@ viewAllAnswers: Model -> Html Msg
 viewAllAnswers model =
   let 
     listOfAnswers = model.answer |> List.map viewAnswer 
+    _ = Debug.log "List of answers" model.answer
   in 
     ul [] listOfAnswers  
 
