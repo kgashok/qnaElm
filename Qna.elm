@@ -64,8 +64,8 @@ type alias Answer =
   }
 
 type alias Response =
-  { --path : String 
-    answer : String 
+  { url : String 
+  , answer : String 
   , score : Float
   }
 
@@ -99,6 +99,7 @@ type Msg
   | NewGif (Result Http.Error String)
   | Topic String
   | NewResponse (Result Http.Error Response)
+  | NewAnswerResponse String (Result Http.Error Response)
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -119,6 +120,19 @@ update msg model =
 
     NewGif (Err _) ->
       ( model , Cmd.none)
+      
+    NewAnswerResponse kName (Ok response) -> 
+      let 
+        -- model_ = addResponse model response.path response.answer response.score 
+        model_ = addResponse model { response | url = kName } 
+      in
+        sortAnswers model_
+
+    NewAnswerResponse kName (Err error) -> 
+      let 
+        model_ = addResponse model (Response "Err" (toString error) 0.0)
+      in 
+        sortAnswers model_
         
     NewResponse (Ok response) -> 
       let 
@@ -129,7 +143,7 @@ update msg model =
 
     NewResponse (Err error) -> 
       let 
-        model_ = addResponse model (Response(toString error) 0.0)
+        model_ = addResponse model (Response "Err" (toString error) 0.0)
       in 
         sortAnswers model_
 
@@ -158,11 +172,12 @@ This should give you `String -> Maybe String`
 addResponse : Model -> Response -> Model 
 addResponse model response =
   let 
-    qna = "-- " -- getName response.path 
+    qna = response.url -- getName response.path 
   in 
     { model | answer = 
       (Answer qna (unescape response.answer) response.score) :: model.answer }
-          
+
+
           
 -- VIEW
 
@@ -244,15 +259,15 @@ getAnswer model =
           Http.request settings_
       in
         Http.send NewResponse request
+        
 
-
-getAnswer2 : Model -> Cmd Msg
-getAnswer2 model =
+getAnswer3 : Model -> Cmd Msg
+getAnswer3 model =
   let
     settings_ kurl = { postSettings | 
-      url = kurl, 
+      url = kurl,
       body = jsonBody (encodeQuestion model.topic),
-      expect  = expectJson decodeResponse }
+      expect  = expectStringResponse expectUrlAndJson }
     --request =
     --  Http.request settings_
     requests = model.knowledgeBase
@@ -265,15 +280,69 @@ getAnswer2 model =
     requests
     --Cmd.batch <| requests
 
+
+getAnswer2 : Model -> Cmd Msg
+getAnswer2 model =
+  let
+    settings_ kurl = { postSettings | 
+      url = kurl,
+      body = jsonBody (encodeQuestion model.topic),
+      expect  = expectStringResponse expectUrlAndJson }
+    
+    sendRequest qnaService =
+      Http.send (NewAnswerResponse qnaService.name) 
+        (Http.request (settings_ qnaService.url))
+  in
+      List.map sendRequest model.knowledgeBase
+          |> Cmd.batch
+
+encodeQuestion2 : String -> String -> Encode.Value        
+encodeQuestion2 question kBaseName =
+  Encode.object 
+    [ ("question", Encode.string question)
+    , ("kid", Encode.string kBaseName)
+    ]
+
 encodeQuestion : String -> Encode.Value        
 encodeQuestion question =
   Encode.object 
     [ ("question", Encode.string question)]
 
+
+expectUrlAndJson response = 
+  Decode.decodeString 
+    (answerScoreDecoder response.url) response.body
+    
+{--
+expectUrlAndJson decoder response = 
+  Result.map (\jsonData -> (response.url, jsonData))
+    (Decode.decodeString decoder response.body)
+
+
+decodeResponse2 : Decode.Decoder String 
+decodeResponse2 = 
+  Decode.decodeString 
+--}
+  
+answerScoreDecoder url = 
+  Decode.map2 (Response url) 
+    (field "answer" Decode.string) 
+    (field "score" Decode.string
+        |> Decode.andThen
+          (\s ->
+            case String.toFloat s of
+              Ok v ->
+                Decode.succeed v
+  
+              Err e ->
+                Decode.fail e
+          )
+    )
+
 decodeResponse : Decode.Decoder Response
 decodeResponse =
-  Decode.map2 Response
-    -- (field "headers" Decode.string) 
+  Decode.map3 Response
+    (field "url" Decode.string) 
     (field "answer" Decode.string)
     (field "score"
       Decode.string
@@ -287,7 +356,8 @@ decodeResponse =
                 Decode.fail e
           )
     )
-
+    
+    
 -- Alternative terse version
 -- Decode.string 
 --   |> Decode.andThen (String.toFloat >> Result.unpack Decode.fail Decode.succeed)
