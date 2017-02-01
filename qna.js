@@ -11090,7 +11090,7 @@ var _marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape = _marcosh$elm_html_to_u
 var _marcosh$elm_html_to_unicode$ElmEscapeHtml$escape = _marcosh$elm_html_to_unicode$ElmEscapeHtml$convert(_marcosh$elm_html_to_unicode$ElmEscapeHtml$escapeChars);
 
 var _user$project$Version$gitRepo = 'https://github.com/kgashok/qnaElm';
-var _user$project$Version$version = 'v1.5-31-gad2dba5';
+var _user$project$Version$version = 'v1.5-33-ge4fc362';
 
 var _user$project$Qna$decodeGifUrl = A2(
 	_elm_lang$core$Json_Decode$at,
@@ -11282,7 +11282,7 @@ var _user$project$Qna$sortAnswers = function (model) {
 var _user$project$Qna$randomGifUrl = 'https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=';
 var _user$project$Qna$knowledgebaseId5 = '947acb6c-2091-49e2-8a53-44339b1fb4e9';
 var _user$project$Qna$knowledgebaseId4 = '8aa4edae-999a-4d64-86d7-10169d60dbac';
-var _user$project$Qna$knowledgebaseId3 = 'ed3f0ded-b71e-43ff-93c6-a34454702b64';
+var _user$project$Qna$knowledgebaseId3 = '2bdec48e-dfba-43d7-a662-23d2784aa341';
 var _user$project$Qna$knowledgebaseId2 = '8c59a93f-1622-4ce3-b848-dcc56f10f2b0';
 var _user$project$Qna$knowledgebaseId = 'b693c8be-313c-434d-b3a7-dad2d4656039';
 var _user$project$Qna$qnamakerSubscriptionKey = 'a6fbd18b9b2e45b59f2ce4f73a56e1e4';
