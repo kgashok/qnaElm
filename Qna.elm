@@ -38,6 +38,9 @@ knowledgebaseId2 = "8c59a93f-1622-4ce3-b848-dcc56f10f2b0"
 knowledgebaseId3 : String 
 knowledgebaseId3 = "ed3f0ded-b71e-43ff-93c6-a34454702b64"
 
+knowledgebaseId4 : String 
+knowledgebaseId4 = "8aa4edae-999a-4d64-86d7-10169d60dbac"
+
 builder : String -> String 
 builder kid = 
   qnamakerUriBase ++ "/knowledgebases/" ++ kid ++ "/generateAnswer"
@@ -71,9 +74,10 @@ type alias Response =
 
 kBase : List QnAService
 kBase = 
-  [ QnAService "cpp" (builder knowledgebaseId3)
-  , QnAService "cse" (builder knowledgebaseId2)
-  , QnAService "ds"  (builder knowledgebaseId) 
+  [ QnAService "cpp"  (builder knowledgebaseId3)
+  , QnAService "cse"  (builder knowledgebaseId2)
+  , QnAService "ds"   (builder knowledgebaseId)
+  , QnAService "java" (builder knowledgebaseId4)
   ]
 
 initialModel : Model 
