@@ -11090,7 +11090,7 @@ var _marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape = _marcosh$elm_html_to_u
 var _marcosh$elm_html_to_unicode$ElmEscapeHtml$escape = _marcosh$elm_html_to_unicode$ElmEscapeHtml$convert(_marcosh$elm_html_to_unicode$ElmEscapeHtml$escapeChars);
 
 var _user$project$Version$gitRepo = 'https://github.com/kgashok/qnaElm';
-var _user$project$Version$version = 'v1.5-29-gafd06f2';
+var _user$project$Version$version = 'v1.5-31-gad2dba5';
 
 var _user$project$Qna$decodeGifUrl = A2(
 	_elm_lang$core$Json_Decode$at,
@@ -11280,6 +11280,7 @@ var _user$project$Qna$sortAnswers = function (model) {
 	} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 };
 var _user$project$Qna$randomGifUrl = 'https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=';
+var _user$project$Qna$knowledgebaseId5 = '947acb6c-2091-49e2-8a53-44339b1fb4e9';
 var _user$project$Qna$knowledgebaseId4 = '8aa4edae-999a-4d64-86d7-10169d60dbac';
 var _user$project$Qna$knowledgebaseId3 = 'ed3f0ded-b71e-43ff-93c6-a34454702b64';
 var _user$project$Qna$knowledgebaseId2 = '8c59a93f-1622-4ce3-b848-dcc56f10f2b0';
@@ -11327,7 +11328,14 @@ var _user$project$Qna$kBase = {
 					_user$project$Qna$QnAService,
 					'java',
 					_user$project$Qna$builder(_user$project$Qna$knowledgebaseId4)),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_user$project$Qna$QnAService,
+						'ood',
+						_user$project$Qna$builder(_user$project$Qna$knowledgebaseId5)),
+					_1: {ctor: '[]'}
+				}
 			}
 		}
 	}

@@ -41,6 +41,10 @@ knowledgebaseId3 = "ed3f0ded-b71e-43ff-93c6-a34454702b64"
 knowledgebaseId4 : String 
 knowledgebaseId4 = "8aa4edae-999a-4d64-86d7-10169d60dbac"
 
+knowledgebaseId5 : String 
+knowledgebaseId5 = "947acb6c-2091-49e2-8a53-44339b1fb4e9"
+
+
 builder : String -> String 
 builder kid = 
   qnamakerUriBase ++ "/knowledgebases/" ++ kid ++ "/generateAnswer"
@@ -78,6 +82,7 @@ kBase =
   , QnAService "cse"  (builder knowledgebaseId2)
   , QnAService "ds"   (builder knowledgebaseId)
   , QnAService "java" (builder knowledgebaseId4)
+  , QnAService "ood"  (builder knowledgebaseId5)
   ]
 
 initialModel : Model 
