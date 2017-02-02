@@ -11090,7 +11090,7 @@ var _marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape = _marcosh$elm_html_to_u
 var _marcosh$elm_html_to_unicode$ElmEscapeHtml$escape = _marcosh$elm_html_to_unicode$ElmEscapeHtml$convert(_marcosh$elm_html_to_unicode$ElmEscapeHtml$escapeChars);
 
 var _user$project$Version$gitRepo = 'https://github.com/kgashok/qnaElm';
-var _user$project$Version$version = 'v1.5-33-ge4fc362';
+var _user$project$Version$version = 'v1.5-35-ge040575';
 
 var _user$project$Qna$decodeGifUrl = A2(
 	_elm_lang$core$Json_Decode$at,
@@ -11180,38 +11180,33 @@ var _user$project$Qna$footer = A2(
 			}),
 		_1: {ctor: '[]'}
 	});
-var _user$project$Qna$viewAnswer = function (answer) {
-	return A2(
-		_elm_lang$html$Html$li,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$span,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('kBase'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text(
-						A2(_elm_lang$core$Basics_ops['++'], answer.kBase, '  ')),
-					_1: {ctor: '[]'}
-				}),
-			_1: {
+var _user$project$Qna$viewAnswer = F2(
+	function (print, answer) {
+		return A2(
+			_elm_lang$html$Html$li,
+			{ctor: '[]'},
+			{
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$span,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('score'),
+						_0: _elm_lang$html$Html_Attributes$classList(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'kBase', _1: !print},
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'kBaseP', _1: print},
+									_1: {ctor: '[]'}
+								}
+							}),
 						_1: {ctor: '[]'}
 					},
 					{
 						ctor: '::',
 						_0: _elm_lang$html$Html$text(
-							_elm_lang$core$Basics$toString(answer.confidence)),
+							A2(_elm_lang$core$Basics_ops['++'], answer.kBase, '  ')),
 						_1: {ctor: '[]'}
 					}),
 				_1: {
@@ -11220,19 +11215,55 @@ var _user$project$Qna$viewAnswer = function (answer) {
 						_elm_lang$html$Html$span,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('answer'),
+							_0: _elm_lang$html$Html_Attributes$classList(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'score', _1: !print},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'scoreP', _1: print},
+										_1: {ctor: '[]'}
+									}
+								}),
 							_1: {ctor: '[]'}
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text(answer.text),
+							_0: _elm_lang$html$Html$text(
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									_elm_lang$core$Basics$toString(answer.confidence),
+									' ')),
 							_1: {ctor: '[]'}
 						}),
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$span,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$classList(
+									{
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'answer', _1: !print},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'answerP', _1: print},
+											_1: {ctor: '[]'}
+										}
+									}),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(answer.text),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
 				}
-			}
-		});
-};
+			});
+	});
 var _user$project$Qna$descending = F3(
 	function (toComparable, x, y) {
 		var flippedComparison = F2(
@@ -11254,7 +11285,10 @@ var _user$project$Qna$descending = F3(
 	});
 var _user$project$Qna$viewAllAnswers = function (model) {
 	var _p1 = A2(_elm_lang$core$Debug$log, 'List of answers', model.answer);
-	var listOfAnswers = A2(_elm_lang$core$List$map, _user$project$Qna$viewAnswer, model.answer);
+	var listOfAnswers = A2(
+		_elm_lang$core$List$map,
+		_user$project$Qna$viewAnswer(model.printFont),
+		model.answer);
 	return A2(
 		_elm_lang$html$Html$ul,
 		{ctor: '[]'},
@@ -11296,9 +11330,9 @@ var _user$project$Qna$builder = function (kid) {
 			'/knowledgebases/',
 			A2(_elm_lang$core$Basics_ops['++'], kid, '/generateAnswer')));
 };
-var _user$project$Qna$Model = F4(
-	function (a, b, c, d) {
-		return {topic: a, gifUrl: b, knowledgeBase: c, answer: d};
+var _user$project$Qna$Model = F5(
+	function (a, b, c, d, e) {
+		return {topic: a, gifUrl: b, knowledgeBase: c, answer: d, printFont: e};
 	});
 var _user$project$Qna$QnAService = F2(
 	function (a, b) {
@@ -11340,12 +11374,13 @@ var _user$project$Qna$kBase = {
 		}
 	}
 };
-var _user$project$Qna$initialModel = A4(
+var _user$project$Qna$initialModel = A5(
 	_user$project$Qna$Model,
 	'what are algorithms?',
 	'img/searchComparison.gif',
 	_user$project$Qna$kBase,
-	{ctor: '[]'});
+	{ctor: '[]'},
+	false);
 var _user$project$Qna$Answer = F3(
 	function (a, b, c) {
 		return {kBase: a, text: b, confidence: c};
@@ -11427,6 +11462,7 @@ var _user$project$Qna$postSettings = {
 	timeout: _elm_lang$core$Maybe$Nothing,
 	withCredentials: false
 };
+var _user$project$Qna$ToggleFont = {ctor: 'ToggleFont'};
 var _user$project$Qna$NewAnswerResponse = F2(
 	function (a, b) {
 		return {ctor: 'NewAnswerResponse', _0: a, _1: b};
@@ -11589,6 +11625,14 @@ var _user$project$Qna$update = F2(
 							0.0));
 					return _user$project$Qna$sortAnswers(model_);
 				}
+			case 'ToggleFont':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{printFont: !model.printFont}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 			default:
 				return {
 					ctor: '_Tuple2',
@@ -11611,12 +11655,68 @@ var _user$project$Qna$view = function (model) {
 		{
 			ctor: '::',
 			_0: A2(
-				_elm_lang$html$Html$h1,
-				{ctor: '[]'},
+				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text('Elm QnA'),
+					_0: _elm_lang$html$Html_Attributes$id('titleContainer'),
 					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$span,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('appTitle'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$h1,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$id('appHeader'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(' Elm QnA  '),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$span,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('printButton'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$button,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$id('printButton'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Events$onClick(_user$project$Qna$ToggleFont),
+											_1: {ctor: '[]'}
+										}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('P'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
 				}),
 			_1: {
 				ctor: '::',

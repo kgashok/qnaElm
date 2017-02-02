@@ -127,12 +127,57 @@ li .kBase {
   height: auto;
 }
 
+li .kBaseP {
+  width: 250px;
+  /*background-color: #111; */
+  color: gray; 
+  height: 100%;
+  font-size: 12px;
+  font-weight: normal;
+  line-height: 9px;
+  margin: 2px;
+}
+
 li .answer {
   width: 750px;
   /*background-color: #777; */
   font-weight: normal;
   color: blue; 
   height: 100%;
+}
+
+li .answerP {
+  width: 750px;
+  /*background-color: #777; */
+  font-weight: normal;
+  font-size: 12px;
+  color: black; 
+  height: 100%;
+  line-height: 9px;
+  margin: 2px;
+}
+
+li .scoreP {
+  width: 750px;
+  /*background-color: #777; */
+  font-weight: normal;
+  font-size: 12px;
+  color: black; 
+  height: 100%;
+  margin: 2px;
+}
+
+#appHeader , #printButton {
+  display:inline;
+  /**other codes**/
+  top: 50%;
+  left: 50%;
+}
+
+#titleContainer{
+    text-align: center;
+    height: 100%;
+    /*background-color : orange; */
 }
 
 .content {
