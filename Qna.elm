@@ -57,6 +57,7 @@ type alias Model =
   , gifUrl : String
   , knowledgeBase : List QnAService
   , answer : List Answer
+  , printFont : Bool
   }
   
 type alias QnAService = 
@@ -92,6 +93,7 @@ initialModel =
     kBase 
     --[Answer "Unknown" "algorithms are eating the world!" 0.0]
     []
+    False
 
 init : (Model, Cmd Msg)
 init  =
@@ -109,6 +111,7 @@ type Msg
   | Topic String
   | NewResponse (Result Http.Error Response)
   | NewAnswerResponse String (Result Http.Error Response)
+  | ToggleFont
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -156,8 +159,11 @@ update msg model =
       in 
         sortAnswers model_
 
+    ToggleFont -> 
+      ( { model | printFont = not model.printFont }, Cmd.none) 
+      
     Topic s -> 
-      ( {model |topic = s}, Cmd.none)
+      ( { model | topic = s }, Cmd.none)
 
 sortAnswers : Model -> (Model, Cmd Msg) 
 sortAnswers model = 
@@ -193,7 +199,10 @@ addResponse model response =
 view : Model -> Html Msg
 view model =
   div [ class "example example-dotted"]
-    [ h1 [] [ text "Elm QnA" ]
+    [ div [ id "titleContainer" ]
+      [ span [ class "appTitle"] [ h1 [id "appHeader"] [ text " Elm QnA  " ] ]
+      , span [ class "printButton"] [ button [ id "printButton", onClick ToggleFont ] [ text "P" ] ]
+      ]
     , hr [class "style8"] []
     , h2 [] [ text model.topic ]
     , footer
@@ -209,7 +218,7 @@ view model =
 viewAllAnswers: Model -> Html Msg 
 viewAllAnswers model =
   let 
-    listOfAnswers = model.answer |> List.map viewAnswer 
+    listOfAnswers = model.answer |> List.map (viewAnswer model.printFont)  
     _ = Debug.log "List of answers" model.answer
   in 
     ul [] listOfAnswers  
@@ -226,14 +235,25 @@ descending toComparable x y =
         GT -> LT
   in
     flippedComparison (toComparable x) (toComparable y)
+
     
     
-viewAnswer: Answer -> Html Msg 
-viewAnswer answer = 
+viewAnswer: Bool -> Answer -> Html Msg 
+viewAnswer print answer = 
+  
   li []
-    [ span [class "kBase" ] [text (answer.kBase ++ "  ")]
-    , span [class "score" ] [text (toString answer.confidence)]
-    , span [class "answer"] [text answer.text]
+    [ span [classList [ ("kBase", (not print) )
+                      , ("kBaseP", print) 
+                      ] 
+           ] [text (answer.kBase ++ "  ")]
+    , span [classList [ ("score", (not print) )
+                      , ("scoreP", print)
+                      ]
+           ] [text (toString (answer.confidence) ++ " ")]
+    , span [classList [ ("answer", (not print) )
+                      , ("answerP", print)
+                      ] 
+           ] [text answer.text]
     ]
  
 footer : Html Msg
