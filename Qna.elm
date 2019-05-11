@@ -8,7 +8,7 @@ import Json.Decode as Decode exposing (Decoder, field, succeed)
 import Json.Encode as Encode
 import Version exposing (version, gitRepo)
 
-import ElmEscapeHtml exposing (..) 
+--import ElmEscapeHtml exposing (..) 
 
 --import Debug exposing (..) 
 
@@ -190,7 +190,8 @@ addResponse model response =
     qna = response.url -- getName response.path 
   in 
     { model | answer = 
-      (Answer qna (unescape response.answer) response.score) :: model.answer }
+      --(Answer qna (unescape response.answer) response.score) :: model.answer }
+      (Answer qna response.answer response.score) :: model.answer }
 
 
           
@@ -340,19 +341,12 @@ encodeQuestion question =
 
 
 expectUrlAndJson response = 
-  Decode.decodeString 
-    (answerScoreDecoder response.url) response.body
+  let 
+    _ = Debug.log "response: " response 
+  in 
+    Decode.decodeString 
+      (answerScoreDecoder response.url) response.body
     
-{--
-expectUrlAndJson decoder response = 
-  Result.map (\jsonData -> (response.url, jsonData))
-    (Decode.decodeString decoder response.body)
-
-
-decodeResponse2 : Decode.Decoder String 
-decodeResponse2 = 
-  Decode.decodeString 
---}
   
 answerScoreDecoder url = 
   Decode.map2 (Response url) 
@@ -368,6 +362,7 @@ answerScoreDecoder url =
                 Decode.fail e
           )
     )
+
 
 decodeResponse : Decode.Decoder Response
 decodeResponse =
@@ -386,11 +381,23 @@ decodeResponse =
                 Decode.fail e
           )
     )
-    
-    
+
 -- Alternative terse version
 -- Decode.string 
 --   |> Decode.andThen (String.toFloat >> Result.unpack Decode.fail Decode.succeed)
+
+{--
+expectUrlAndJson decoder response = 
+  Result.map (\jsonData -> (response.url, jsonData))
+    (Decode.decodeString decoder response.body)
+
+
+decodeResponse2 : Decode.Decoder String 
+decodeResponse2 = 
+  Decode.decodeString 
+--}
+
+
 
 decodeAnswer : Decode.Decoder String
 decodeAnswer =
